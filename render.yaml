@@ -7,8 +7,8 @@ services:
     startCommand: cd backend && npx prisma migrate deploy && npm run seed && npm run start:prod
     healthCheckPath: /
     envVars:
-      - key: DATABASE_URL
-        value: file:./dev.db
+      # DATABASE_URL must be set to the managed Postgres connection string
+      # (with ?sslmode=require) in the Render dashboard service settings.
       - key: NODE_VERSION
         value: 20
       - key: JWT_SECRET
