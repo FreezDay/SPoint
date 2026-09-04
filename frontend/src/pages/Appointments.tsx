@@ -4,7 +4,7 @@ import { format, parse, startOfWeek, getDay, setHours, setMinutes, isSameDay } f
 import { enUS, ptBR, uk } from 'date-fns/locale';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import api from '../lib/api';
-import { Plus, User, Phone, Mail, MessageSquare, Clock, Info, X, Send, UserCheck, CalendarOff } from 'lucide-react';
+import { Plus, User, Phone, Mail, MessageSquare, Clock, Info, X, Send, UserCheck, CalendarOff, Trash2 } from 'lucide-react';
 import { Button, Card, Tabs, Tab, Badge, Spinner, Modal, Form } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 
@@ -59,8 +59,7 @@ const Appointments: React.FC = () => {
         return setHours(setMinutes(new Date(), 0), Math.min(23, hours + 1));
     }, [settings]);
 
-    useEffect(() => {
-        const fetchData = async () => {
+    const fetchData = useCallback(async () => {
             setLoading(true);
             try {
                 const [apptsRes, settingsRes, staffRes] = await Promise.all([
@@ -84,9 +83,11 @@ const Appointments: React.FC = () => {
             } finally {
                 setLoading(false);
             }
-        };
+        }, []);
+
+    useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const eventPropGetter = useCallback((_event: any) => {
         return {
@@ -161,8 +162,32 @@ const Appointments: React.FC = () => {
             // Optionally show success toast/alert
         } catch (error) {
             console.error('Failed to send message:', error);
+
         } finally {
             setSendingMsg(false);
+        }
+    };
+
+    const handleStatusChange = async (status: string) => {
+        if (!selectedAppointment) return;
+        try {
+            await api.patch('/appointments/' + selectedAppointment.id, { status });
+            setSelectedAppointment({ ...selectedAppointment, status });
+            fetchData();
+        } catch (error: any) {
+            alert(error?.response?.data?.message || 'Failed to update appointment status');
+        }
+    };
+
+    const handleDeleteAppointment = async () => {
+        if (!selectedAppointment) return;
+        if (!window.confirm('Delete this appointment? This action cannot be undone.')) return;
+        try {
+            await api.delete('/appointments/' + selectedAppointment.id);
+            setSelectedAppointment(null);
+            fetchData();
+        } catch (error: any) {
+            alert(error?.response?.data?.message || 'Failed to delete appointment');
         }
     };
 
@@ -538,6 +563,22 @@ const Appointments: React.FC = () => {
                                                 <p className="small mb-0 text-secondary">{selectedAppointment.notes}</p>
                                             </div>
                                         )}
+
+                                        <div className="p-3 border border-light rounded-4 mb-3">
+                                            <Form.Label className="fw-bold small text-uppercase text-muted d-block mb-2">Status</Form.Label>
+                                            <Form.Select value={selectedAppointment.status} onChange={(e) => handleStatusChange(e.target.value)}>
+                                                <option>PENDING</option>
+                                                <option>CONFIRMED</option>
+                                                <option>COMPLETED</option>
+                                                <option>CANCELLED</option>
+                                                <option>NO_SHOW</option>
+                                            </Form.Select>
+                                        </div>
+
+                                        <Button variant="danger" className="w-100 rounded-4 d-flex align-items-center justify-content-center gap-2 fw-bold border-0" onClick={handleDeleteAppointment}>
+                                            <Trash2 size={18} />
+                                            Delete Appointment
+                                        </Button>
                                     </div>
                                 </Tab>
                             </Tabs>

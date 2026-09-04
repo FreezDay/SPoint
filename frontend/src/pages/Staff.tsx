@@ -33,7 +33,7 @@ const StaffPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
-    const [formData, setFormData] = useState({ name: '', email: '', bio: '', avatar: AVATARS[0] });
+    const [formData, setFormData] = useState({ name: '', email: '', bio: '', avatar: AVATARS[0], password: '' });
 
     useEffect(() => {
         fetchStaff();
@@ -52,7 +52,7 @@ const StaffPage: React.FC = () => {
 
     const handleOpenCreate = () => {
         setEditingStaff(null);
-        setFormData({ name: '', email: '', bio: '', avatar: AVATARS[0] });
+        setFormData({ name: '', email: '', bio: '', avatar: AVATARS[0], password: '' });
         setShowModal(true);
     };
 
@@ -62,7 +62,8 @@ const StaffPage: React.FC = () => {
             name: staff.name,
             email: staff.email,
             bio: staff.staffProfile?.bio || '',
-            avatar: staff.avatar || AVATARS[0]
+            avatar: staff.avatar || AVATARS[0],
+            password: ''
         });
         setShowModal(true);
     };
@@ -70,21 +71,25 @@ const StaffPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            const payload: any = { name: formData.name, email: formData.email, bio: formData.bio, avatar: formData.avatar };
+            if (formData.password) {
+                payload.password = formData.password;
+            }
             if (editingStaff) {
-                await api.patch(`/staff/${editingStaff.id}`, formData);
+                await api.patch(`/staff/${editingStaff.id}`, payload);
             } else {
-                await api.post('/staff', formData);
+                await api.post('/staff', payload);
             }
             setShowModal(false);
             fetchStaff();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving staff:', error);
-            alert('Failed to save staff');
+            alert(error?.response?.data?.message || 'Failed to save staff');
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (!window.confirm('Are you sure you want to delete this staff member?')) return;
+        if (!window.confirm('Delete this staff member? Their appointments and service records will also be removed.')) return;
         try {
             await api.delete(`/staff/${id}`);
             fetchStaff();
@@ -224,6 +229,17 @@ const StaffPage: React.FC = () => {
                                         disabled={!!editingStaff}
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        className="py-2 rounded-3"
+                                    />
+                                </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label className="small fw-bold text-secondary">{t('password')}</Form.Label>
+                                    <Form.Control
+                                        type="password"
+                                        placeholder={editingStaff ? '•••••••• (deixar vazio para manter)' : t('password')}
+                                        required={!editingStaff}
+                                        value={formData.password}
+                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                         className="py-2 rounded-3"
                                     />
                                 </Form.Group>

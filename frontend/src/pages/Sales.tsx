@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../lib/api';
-import { Search, CreditCard, Calendar, User, Eye } from 'lucide-react';
+import { Search, CreditCard, Calendar, User, Trash2 } from 'lucide-react';
 import { Table, Button, Form, Card, InputGroup, Spinner, Badge } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 
@@ -37,6 +37,17 @@ const Sales: React.FC = () => {
             console.error('Error fetching sales:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!window.confirm('Delete this sale? This action cannot be undone.')) return;
+        try {
+            await api.delete(`/sales/${id}`);
+            fetchSales();
+        } catch (error: any) {
+            console.error('Error deleting sale:', error);
+            alert(error?.response?.data?.message || 'Failed to delete sale');
         }
     };
 
@@ -112,9 +123,10 @@ const Sales: React.FC = () => {
                                             <td className="px-4 py-3 text-end">
                                                 <Button
                                                     variant="link"
-                                                    className="text-primary p-0 d-flex align-items-center gap-1 ms-auto text-decoration-none"
+                                                    className="text-danger p-0 d-flex align-items-center gap-1 ms-auto text-decoration-none"
+                                                    onClick={() => handleDelete(sale.id)}
                                                 >
-                                                    <Eye size={18} /> <span className="small fw-bold">{t('receipt')}</span>
+                                                    <Trash2 size={18} /> <span className="small fw-bold">{t('delete')}</span>
                                                 </Button>
                                             </td>
                                         </tr>

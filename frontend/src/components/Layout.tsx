@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { LayoutDashboard, Users, LogOut, Globe, Settings, ClipboardPlus, TrendingUp, UserRound } from 'lucide-react';
+import { LayoutDashboard, Users, LogOut, Globe, Settings, ClipboardPlus, TrendingUp, UserRound, CalendarDays, Scissors, Package, Receipt, UserCog } from 'lucide-react';
 import { Navbar, Nav, Container, Button, NavDropdown } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import api from '../lib/api';
@@ -36,7 +36,12 @@ const Layout: React.FC = () => {
 
     const adminNavItems = [
         { path: '/dashboard', icon: <LayoutDashboard size={20} />, label: t('dashboard') },
-        { path: '/staff', icon: <Users size={20} />, label: t('staff') },
+        { path: '/appointments', icon: <CalendarDays size={20} />, label: t('appointments') },
+        { path: '/clients', icon: <Users size={20} />, label: t('clients') },
+        { path: '/services', icon: <Scissors size={20} />, label: t('services') },
+        { path: '/products', icon: <Package size={20} />, label: t('products') },
+        { path: '/sales', icon: <Receipt size={20} />, label: t('sales') },
+        { path: '/staff', icon: <UserCog size={20} />, label: t('staff') },
         { path: '/register-service', icon: <ClipboardPlus size={20} />, label: 'Registar serviço' },
         { path: '/earnings', icon: <TrendingUp size={20} />, label: 'Ganhos' },
         { path: '/configuration', icon: <Settings size={20} />, label: t('settings') },
