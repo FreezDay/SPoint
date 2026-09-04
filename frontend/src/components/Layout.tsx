@@ -1,8 +1,8 @@
 import React from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { LayoutDashboard, Users, Calendar, ShoppingBag, LogOut, Package, Globe, Home, BookOpen, ShoppingCart, History, Settings, MessageSquare } from 'lucide-react';
-import { Navbar, Nav, Container, Button, NavDropdown, Badge } from 'react-bootstrap';
+import { LayoutDashboard, Users, LogOut, Globe, Settings, ClipboardPlus, TrendingUp, UserRound } from 'lucide-react';
+import { Navbar, Nav, Container, Button, NavDropdown } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import api from '../lib/api';
 
@@ -12,7 +12,6 @@ const Layout: React.FC = () => {
     const location = useLocation();
     const { t, i18n } = useTranslation();
     const [settings, setSettings] = React.useState<any>(null);
-    const [unreadCount, setUnreadCount] = React.useState(0);
 
     React.useEffect(() => {
         const fetchSettings = async () => {
@@ -23,18 +22,7 @@ const Layout: React.FC = () => {
                 console.error('Error fetching settings:', error);
             }
         };
-        const fetchUnreadCount = async () => {
-            try {
-                const res = await api.get('/messages/unread/count');
-                setUnreadCount(res.data.count);
-            } catch (error) {
-                console.error('Error fetching unread count:', error);
-            }
-        };
         fetchSettings();
-        fetchUnreadCount();
-        const interval = setInterval(fetchUnreadCount, 30000); // Pulse every 30s
-        return () => clearInterval(interval);
     }, []);
 
     const handleLogout = () => {
@@ -49,42 +37,19 @@ const Layout: React.FC = () => {
     const adminNavItems = [
         { path: '/dashboard', icon: <LayoutDashboard size={20} />, label: t('dashboard') },
         { path: '/staff', icon: <Users size={20} />, label: t('staff') },
-        { path: '/clients', icon: <Users size={20} />, label: t('clients') },
-        { path: '/appointments', icon: <Calendar size={20} />, label: t('appointments') },
-        { path: '/services', icon: <ShoppingBag size={20} />, label: t('services') },
-        { path: '/products', icon: <Package size={20} />, label: t('products') },
-        { path: '/sales', icon: <ShoppingBag size={20} />, label: t('sales') },
-        {
-            path: '/message-center',
-            icon: <MessageSquare size={20} />,
-            label: (
-                <div className="d-flex align-items-center justify-content-between w-100">
-                    <span>{t('message_center')}</span>
-                    {unreadCount > 0 && <Badge bg="danger" pill>{unreadCount}</Badge>}
-                </div>
-            )
-        },
+        { path: '/register-service', icon: <ClipboardPlus size={20} />, label: 'Registar serviço' },
+        { path: '/earnings', icon: <TrendingUp size={20} />, label: 'Ganhos' },
         { path: '/configuration', icon: <Settings size={20} />, label: t('settings') },
     ];
 
-    const clientNavItems = [
-        { path: '/my-dashboard', icon: <Home size={20} />, label: t('my_dashboard') },
-        { path: '/my-booking', icon: <BookOpen size={20} />, label: t('book_online') },
-        { path: '/online-store', icon: <ShoppingCart size={20} />, label: t('shop') },
-        { path: '/my-orders', icon: <History size={20} />, label: t('my_orders') },
-        {
-            path: '/my-inbox',
-            icon: <MessageSquare size={20} />,
-            label: (
-                <div className="d-flex align-items-center justify-content-between w-100">
-                    <span>{t('inbox')}</span>
-                    {unreadCount > 0 && <Badge bg="danger" pill>{unreadCount}</Badge>}
-                </div>
-            )
-        },
-    ];
-
-    const navItems = user?.role === 'CLIENT' ? clientNavItems : adminNavItems;
+    const navItems = user?.role === 'STAFF'
+        ? [
+            { path: '/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
+            { path: '/register-service', icon: <ClipboardPlus size={20} />, label: 'Registar serviços' },
+            { path: '/earnings', icon: <TrendingUp size={20} />, label: 'Ganhos' },
+            { path: '/profile', icon: <UserRound size={20} />, label: 'Perfil' },
+        ]
+        : adminNavItems;
 
     return (
         <div className="d-flex flex-column min-vh-100">
@@ -116,6 +81,18 @@ const Layout: React.FC = () => {
                                 <LogOut size={16} /> <span className="d-none d-sm-inline">{t('logout')}</span>
                             </Button>
                         </Nav>
+                        <Nav className="d-lg-none flex-column w-100 mt-3 border-top pt-2">
+                            {navItems.map((item) => (
+                                <Nav.Link
+                                    key={`mobile-${item.path}`}
+                                    as={Link}
+                                    to={item.path}
+                                    className={`px-3 py-2 d-flex align-items-center gap-3 ${location.pathname === item.path ? 'bg-primary text-white rounded-3' : 'text-dark'}`}
+                                >
+                                    {item.icon} {item.label}
+                                </Nav.Link>
+                            ))}
+                        </Nav>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
@@ -141,7 +118,7 @@ const Layout: React.FC = () => {
                         <Outlet />
                     </Container>
                     <footer className="mt-auto pt-5 pb-4 text-center text-muted small border-top">
-                        <p className="mb-0">{t('designed_by')} <span className="fw-bold text-primary">ServApp</span></p>
+                        <p className="mb-0">{t('designed_by')} <span className="fw-bold text-primary">Munitum</span></p>
                     </footer>
                 </main>
             </div>

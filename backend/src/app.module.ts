@@ -13,11 +13,11 @@ import { ReportsModule } from './reports/reports.module';
 import { PrismaModule } from './prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { SettingsModule } from './settings/settings.module';
-import { MessagesModule } from './messages/messages.module';
 import { NewsModule } from './news/news.module';
+import { ServiceRecordsModule } from './service-records/service-records.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UsersModule, ClientsModule, ServicesModule, ServiceCategoriesModule, StaffModule, AppointmentsModule, ProductsModule, SalesModule, ReportsModule, SettingsModule, MessagesModule, NewsModule],
+  imports: [PrismaModule, AuthModule, UsersModule, ClientsModule, ServicesModule, ServiceCategoriesModule, StaffModule, AppointmentsModule, ProductsModule, SalesModule, ReportsModule, SettingsModule, NewsModule, ServiceRecordsModule],
   controllers: [AppController],
   providers: [AppService],
 })

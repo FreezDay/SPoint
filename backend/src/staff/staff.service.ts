@@ -29,7 +29,7 @@ export class StaffService {
 
   async findAll() {
     return this.prisma.user.findMany({
-      where: { role: 'STAFF' },
+      where: { role: { in: ['STAFF', 'ADMIN'] } },
       include: { staffProfile: true },
     });
   }

@@ -4,9 +4,12 @@ services:
     runtime: node
     plan: free
     buildCommand: cd backend && npm install && npx prisma generate && npm run build
-    startCommand: cd backend && npx prisma migrate deploy && npm run start:prod
+    startCommand: cd backend && npx prisma migrate deploy && npm run seed && npm run start:prod
+    healthCheckPath: /
     envVars:
       - key: DATABASE_URL
         value: file:./dev.db
       - key: NODE_VERSION
         value: 20
+      - key: JWT_SECRET
+        generateValue: true

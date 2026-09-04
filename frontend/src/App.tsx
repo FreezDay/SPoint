@@ -2,25 +2,17 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ServiceRegister from './pages/ServiceRegister';
+import Earnings from './pages/Earnings';
+import Profile from './pages/Profile';
 import Dashboard from './pages/Dashboard';
-import Clients from './pages/Clients';
 import Services from './pages/Services';
 import Staff from './pages/Staff';
-import Appointments from './pages/Appointments';
-import Products from './pages/Products';
-import Sales from './pages/Sales';
 import Layout from './components/Layout';
 import PublicLayout from './components/PublicLayout';
 import api from './lib/api';
 import { useAuthStore } from './store/useAuthStore';
 import Configuration from './pages/admin/Configuration';
-import MessageCenter from './pages/admin/MessageCenter';
-import Home from './pages/Home';
-import ClientDashboard from './pages/client/ClientDashboard';
-import ClientInbox from './pages/client/ClientInbox';
-import BookingPage from './pages/client/BookingPage';
-import Storefront from './pages/client/Storefront';
-import OrderHistory from './pages/client/OrderHistory';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, roles }: { children: React.ReactNode, roles?: string[] }) => {
@@ -42,7 +34,7 @@ const ProtectedRoute = ({ children, roles }: { children: React.ReactNode, roles?
 
   if (roles && user && !roles.includes(user.role)) {
     // Redirect to their respective dashboard instead of "/"
-    const target = user.role === 'CLIENT' ? '/my-dashboard' : '/dashboard';
+    const target = '/dashboard';
     return <Navigate to={target} replace />;
   }
 
@@ -74,16 +66,11 @@ function App() {
         <Route element={<PublicLayout />}>
           <Route path="/" element={
             token ? (
-              user?.role === 'CLIENT'
-                ? <Navigate to="/my-dashboard" replace />
-                : <Navigate to="/dashboard" replace />
+                <Navigate to="/dashboard" replace />
             ) : (
-              <Home />
+              <Navigate to="/login" replace />
             )
           } />
-          <Route path="/book-online" element={<BookingPage />} />
-          <Route path="/shop" element={<Storefront />} />
-          <Route path="/storefront" element={<Storefront />} />
         </Route>
 
         <Route path="/login" element={<Login />} />
@@ -99,37 +86,18 @@ function App() {
           <Route path="dashboard" element={
             <ProtectedRoute roles={['ADMIN', 'STAFF']}><Dashboard /></ProtectedRoute>
           } />
-          <Route path="clients" element={
-            <ProtectedRoute roles={['ADMIN']}><Clients /></ProtectedRoute>
-          } />
           <Route path="services" element={
             <ProtectedRoute roles={['ADMIN']}><Services /></ProtectedRoute>
           } />
           <Route path="staff" element={
             <ProtectedRoute roles={['ADMIN']}><Staff /></ProtectedRoute>
           } />
-          <Route path="appointments" element={
-            <ProtectedRoute roles={['ADMIN', 'STAFF']}><Appointments /></ProtectedRoute>
-          } />
-          <Route path="products" element={
-            <ProtectedRoute roles={['ADMIN']}><Products /></ProtectedRoute>
-          } />
-          <Route path="sales" element={
-            <ProtectedRoute roles={['ADMIN', 'STAFF']}><Sales /></ProtectedRoute>
-          } />
+          <Route path="register-service" element={<ProtectedRoute roles={['ADMIN', 'STAFF']}><ServiceRegister /></ProtectedRoute>} />
+          <Route path="earnings" element={<ProtectedRoute roles={['ADMIN', 'STAFF']}><Earnings /></ProtectedRoute>} />
+          <Route path="profile" element={<ProtectedRoute roles={['STAFF']}><Profile /></ProtectedRoute>} />
           <Route path="configuration" element={
             <ProtectedRoute roles={['ADMIN']}><Configuration /></ProtectedRoute>
           } />
-          <Route path="/message-center" element={
-            <ProtectedRoute roles={['ADMIN', 'STAFF']}><MessageCenter /></ProtectedRoute>
-          } />
-
-          {/* Client Authenticated Routes */}
-          <Route path="my-dashboard" element={<ProtectedRoute roles={['CLIENT']}><ClientDashboard /></ProtectedRoute>} />
-          <Route path="my-orders" element={<ProtectedRoute roles={['CLIENT']}><OrderHistory /></ProtectedRoute>} />
-          <Route path="my-inbox" element={<ProtectedRoute roles={['CLIENT']}><ClientInbox /></ProtectedRoute>} />
-          <Route path="my-booking" element={<ProtectedRoute roles={['CLIENT']}><BookingPage /></ProtectedRoute>} />
-          <Route path="online-store" element={<ProtectedRoute roles={['CLIENT']}><Storefront /></ProtectedRoute>} />
         </Route>
       </Routes>
     </Router>

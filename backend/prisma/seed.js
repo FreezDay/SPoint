@@ -1,11 +1,8 @@
 const { PrismaClient } = require('@prisma/client');
-const { PrismaLibSql } = require('@prisma/adapter-libsql');
-const { createClient } = require('@libsql/client');
 const bcrypt = require('bcrypt');
 
 async function main() {
-    const adapter = new PrismaLibSql({ url: 'file:dev.db' });
-    const prisma = new PrismaClient({ adapter });
+    const prisma = new PrismaClient();
 
     const email = 'admin@example.com';
     const password = 'password123';

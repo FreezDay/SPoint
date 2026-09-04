@@ -21,7 +21,7 @@ model User {
   email     String   @unique
   password  String
   name      String?
-  role      Role     @default(CLIENT)
+  role      Role     @default(STAFF)
   avatar    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -30,6 +30,8 @@ model User {
   staffProfile  StaffProfile?
   appointments  Appointment[]
   sales         Sale[]
+  providedServices ServiceRecord[] @relation("ProvidedServices")
+  serviceRecordsForClient ServiceRecord[] @relation("ClientServiceRecords")
   sentMessages     Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
 }
@@ -127,6 +129,20 @@ model Sale {
   total     Decimal
   createdAt DateTime @default(now())
   items     SalesItem[]
+}
+
+model ServiceRecord {
+  id            String   @id @default(uuid())
+  serviceName   String
+  amount        Decimal
+  serviceDate   DateTime @default(now())
+  clientName    String
+  paymentMethod String
+  staffId       String
+  staff         User     @relation("ProvidedServices", fields: [staffId], references: [id], onDelete: Cascade)
+  clientId      String?
+  client        User?    @relation("ClientServiceRecords", fields: [clientId], references: [id], onDelete: SetNull)
+  createdAt     DateTime @default(now())
 }
 
 model SalesItem {

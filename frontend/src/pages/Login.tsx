@@ -19,12 +19,7 @@ const Login: React.FC = () => {
         try {
             const response = await api.post('/auth/login', { email, password });
             login(response.data.user, response.data.access_token);
-            const user = response.data.user;
-            if (user.role === 'CLIENT') {
-                navigate('/my-dashboard');
-            } else {
-                navigate('/dashboard');
-            }
+            navigate('/dashboard');
         } catch (error: any) {
             console.error('Registration failed', error);
             if (!error.response) {
@@ -75,11 +70,11 @@ const Login: React.FC = () => {
                         </div>
 
                         <div className="d-grid gap-2 mb-4">
-                            <Button variant="outline-dark" className="d-flex align-items-center justify-content-center gap-2 py-2 rounded-3 border-secondary border-opacity-25" onClick={() => navigate('/my-dashboard')}>
+                            <Button variant="outline-dark" className="d-flex align-items-center justify-content-center gap-2 py-2 rounded-3 border-secondary border-opacity-25" onClick={() => navigate('/register-service')}>
                                 <img src="https://www.google.com/favicon.ico" width="16" height="16" alt="Google" />
                                 {t('google')}
                             </Button>
-                            <Button variant="outline-dark" className="d-flex align-items-center justify-content-center gap-2 py-2 rounded-3 border-secondary border-opacity-25" onClick={() => navigate('/my-dashboard')}>
+                            <Button variant="outline-dark" className="d-flex align-items-center justify-content-center gap-2 py-2 rounded-3 border-secondary border-opacity-25" onClick={() => navigate('/register-service')}>
                                 <img src="https://www.apple.com/favicon.ico" width="16" height="16" alt="Apple" />
                                 {t('apple')}
                             </Button>

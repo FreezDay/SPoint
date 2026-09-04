@@ -21,13 +21,14 @@ export class SettingsService implements OnModuleInit {
             { key: 'business_address', value: 'Rua de Exemplo 123, Lisboa' },
             { key: 'business_google_maps', value: 'https://maps.google.com' },
             { key: 'service_address', value: 'Rua de Exemplo 123, Lisboa' },
-            { key: 'business_name', value: 'ServiceApp' }
+            { key: 'business_name', value: 'Munitum' },
+            { key: 'staff_commission_rates', value: JSON.stringify({}) }
         ];
 
         for (const setting of defaults) {
             await (this.prisma as any).globalSetting.upsert({
                 where: { key: setting.key },
-                update: { value: setting.value }, // Update existing settings with new defaults
+                update: {},
                 create: setting,
             });
         }

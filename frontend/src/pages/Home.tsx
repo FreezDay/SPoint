@@ -25,7 +25,7 @@ const Home: React.FC = () => {
         <div className="py-5">
             <div className="text-center mb-5 animate__animated animate__fadeInDown">
                 <h1 className="display-4 fw-bold text-dark mb-3">
-                    {t('home_welcome_text') || 'Welcome to'} {settings?.business_name || 'ServiceApp'}
+                    {t('home_welcome_text') || 'Welcome to'} {settings?.business_name || 'Munitum'}
                 </h1>
                 <p className="lead text-secondary mx-auto" style={{ maxWidth: '600px' }}>
                     {t('home_desc_text') || 'Everything you need, all in one place. Schedule your next appointment or browse our curated store.'}

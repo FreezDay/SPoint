@@ -103,7 +103,6 @@ const resources = {
             "opening_time": "Opening Time",
             "closing_time": "Closing Time",
             "saving": "Saving...",
-            "save_settings": "Save Settings",
             "rest_non_working_hours": "Rest & Non-working Hours",
             "start_break": "Start Break",
             "end_break": "End Break",
@@ -219,7 +218,8 @@ const resources = {
             "designed_by": "Designed and produced by",
             "book_online_desc": "Book your services in seconds. Pick your favorite professional and time slot.",
             "shop_desc": "Browse our premium products and shop from the comfort of your home.",
-            "at": "at"
+            "at": "at",
+            "daily_operations": "Daily operations", "register_service": "Register service", "update_earnings_desc": "Save each appointment to update your earnings automatically.", "new_appointment_entry": "New appointment", "fill_service_details": "Enter the service details.", "select_service_placeholder": "Select service", "other_service": "Other service", "service_name": "Service name", "amount_eur": "Amount (€)", "service_date": "Date", "client_name": "Client name", "payment_method": "Payment method", "provided_by": "Provided by", "select_professional": "Select professional", "save_service": "Save service", "saving_service": "Saving...", "service_saved": "Service saved successfully.", "load_staff_failed": "Could not load staff members.", "performance": "Performance", "earnings": "Earnings", "net_values_desc": "Net values after the administrator commission.", "last_days": "Last {{count}} days", "service_count": "{{count}} services", "earnings_evolution": "Earnings evolution", "daily_net_totals": "Daily net totals", "daily_history": "Daily history", "last_30_days_desc": "Net total for each of the last 30 days.", "service_records": "Service records", "commission_applied": "Individual commission applied", "gross_value": "Gross value", "net_value": "Net value", "no_services_period": "No services in this period.", "services_done": "Services completed", "gained": "earned", "day": "Day", "week": "Week", "month": "Month", "personal_account": "Personal account", "profile": "Profile", "profile_desc": "Update the details used by your hairdresser account.", "personal_data": "Personal data", "profile_icon": "Profile icon", "choose_profile_icon": "Choose the icon shown on your account.", "new_password": "New password", "keep_password": "Leave blank to keep the current password", "save_changes": "Save changes", "profile_updated": "Profile updated successfully.", "profile_update_failed": "Could not update the profile.", "password_protected": "Your password is protected and never displayed.", "administration": "Administration", "settings_desc": "Configure the business name and team percentages.", "business": "Business", "space_name": "Business name", "commission_by_professional": "Percentage by professional", "commission_desc": "Percentage deducted from each professional's gross value.", "add_staff_for_commission": "Add staff members to configure percentages.", "save_settings": "Save settings", "after_commission": "After commission: €{{value}}"
         }
     },
     pt: {
@@ -322,7 +322,6 @@ const resources = {
             "opening_time": "Hora de Abertura",
             "closing_time": "Hora de Fecho",
             "saving": "A guardar...",
-            "save_settings": "Guardar Configurações",
             "rest_non_working_hours": "Horas de Descanso e Não Laborais",
             "start_break": "Início da Pausa",
             "end_break": "Fim da Pausa",
@@ -438,7 +437,8 @@ const resources = {
             "designed_by": "Concebido e produzido por",
             "book_online_desc": "Marque os seus serviços em segundos. Escolha o seu profissional preferido e horário.",
             "shop_desc": "Explore os nossos produtos premium e compre comodamente em casa.",
-            "at": "às"
+            "at": "às",
+            "daily_operations": "Operação diária", "register_service": "Registar serviço", "update_earnings_desc": "Guarde cada atendimento para atualizar automaticamente os seus ganhos.", "new_appointment_entry": "Novo atendimento", "fill_service_details": "Preencha os dados do serviço prestado.", "select_service_placeholder": "Selecionar serviço", "other_service": "Outro serviço", "service_name": "Nome do serviço", "amount_eur": "Valor (€)", "service_date": "Data", "client_name": "Nome do cliente", "payment_method": "Forma de pagamento", "provided_by": "Prestado por", "select_professional": "Selecionar profissional", "save_service": "Guardar serviço", "saving_service": "A guardar...", "service_saved": "Serviço registado com sucesso.", "load_staff_failed": "Não foi possível carregar os profissionais.", "performance": "Desempenho", "earnings": "Ganhos", "net_values_desc": "Valores líquidos depois da comissão definida pelo administrador.", "last_days": "Últimos {{count}} dias", "service_count": "{{count}} serviços", "earnings_evolution": "Evolução dos ganhos", "daily_net_totals": "Totais líquidos por dia", "daily_history": "Histórico diário", "last_30_days_desc": "Total líquido de cada dia dos últimos 30 dias.", "service_records": "Registo de serviços", "commission_applied": "Comissão individual aplicada", "gross_value": "Valor ganho", "net_value": "Valor líquido", "no_services_period": "Sem serviços neste período.", "services_done": "Serviços realizados", "gained": "ganho", "day": "Dia", "week": "Semana", "month": "Mês", "personal_account": "Conta pessoal", "profile": "Perfil", "profile_desc": "Atualize os dados usados na sua conta de cabeleireiro.", "personal_data": "Dados pessoais", "profile_icon": "Ícone do perfil", "choose_profile_icon": "Escolha o ícone que aparece na sua conta.", "new_password": "Nova password", "keep_password": "Deixe vazio para manter a atual", "save_changes": "Guardar alterações", "profile_updated": "Perfil atualizado com sucesso.", "profile_update_failed": "Não foi possível atualizar o perfil.", "password_protected": "A password é protegida e nunca é mostrada.", "administration": "Administração", "settings_desc": "Configure o nome do espaço e as percentagens da equipa.", "business": "Negócio", "space_name": "Nome do espaço", "commission_by_professional": "Percentagem por profissional", "commission_desc": "Percentagem retirada ao valor bruto de cada profissional.", "add_staff_for_commission": "Adicione profissionais para configurar percentagens.", "save_settings": "Guardar definições", "after_commission": "Após comissão: €{{value}}"
         }
     },
     uk: {
@@ -541,7 +541,6 @@ const resources = {
             "opening_time": "Час Відкриття",
             "closing_time": "Час Закриття",
             "saving": "Збереження...",
-            "save_settings": "Зберегти Налаштування",
             "rest_non_working_hours": "Час Відпочинку та Неробочі Години",
             "start_break": "Початок Перерви",
             "end_break": "Кінець Перерви",
@@ -616,7 +615,8 @@ const resources = {
             "designed_by": "Розроблено та виготовлено",
             "book_online_desc": "Записуйтесь на послуги за секунди. Оберіть улюбленого спеціаліста та зручний час.",
             "shop_desc": "Переглядайте наші преміум-товари та купуйте, не виходячи з дому.",
-            "at": "о"
+            "at": "о",
+            "daily_operations": "Щоденна робота", "register_service": "Зареєструвати послугу", "update_earnings_desc": "Зберігайте кожне обслуговування для автоматичного оновлення доходів.", "new_appointment_entry": "Нове обслуговування", "fill_service_details": "Введіть дані послуги.", "select_service_placeholder": "Оберіть послугу", "other_service": "Інша послуга", "service_name": "Назва послуги", "amount_eur": "Сума (€)", "service_date": "Дата", "client_name": "Ім'я клієнта", "payment_method": "Спосіб оплати", "provided_by": "Виконав", "select_professional": "Оберіть спеціаліста", "save_service": "Зберегти послугу", "saving_service": "Збереження...", "service_saved": "Послугу успішно збережено.", "load_staff_failed": "Не вдалося завантажити персонал.", "performance": "Результати", "earnings": "Доходи", "net_values_desc": "Чисті значення після комісії адміністратора.", "last_days": "Останні {{count}} днів", "service_count": "{{count}} послуг", "earnings_evolution": "Динаміка доходів", "daily_net_totals": "Щоденні чисті підсумки", "daily_history": "Щоденна історія", "last_30_days_desc": "Чистий підсумок за кожен з останніх 30 днів.", "service_records": "Записи послуг", "commission_applied": "Застосовано індивідуальну комісію", "gross_value": "Валовий дохід", "net_value": "Чистий дохід", "no_services_period": "У цей період послуг немає.", "services_done": "Виконані послуги", "gained": "дохід", "day": "День", "week": "Тиждень", "month": "Місяць", "personal_account": "Особистий кабінет", "profile": "Профіль", "profile_desc": "Оновіть дані облікового запису перукаря.", "personal_data": "Особисті дані", "profile_icon": "Іконка профілю", "choose_profile_icon": "Оберіть іконку для облікового запису.", "new_password": "Новий пароль", "keep_password": "Залиште порожнім, щоб зберегти поточний пароль", "save_changes": "Зберегти зміни", "profile_updated": "Профіль успішно оновлено.", "profile_update_failed": "Не вдалося оновити профіль.", "password_protected": "Пароль захищений і ніколи не показується.", "administration": "Адміністрування", "settings_desc": "Налаштуйте назву бізнесу та відсотки команди.", "business": "Бізнес", "space_name": "Назва бізнесу", "commission_by_professional": "Відсоток спеціаліста", "commission_desc": "Відсоток, що вираховується з валового доходу спеціаліста.", "add_staff_for_commission": "Додайте спеціалістів для налаштування відсотків.", "save_settings": "Зберегти налаштування", "after_commission": "Після комісії: €{{value}}"
         }
     }
 };
