@@ -26,7 +26,7 @@ export class NewsController {
     }
 
     @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles('ADMIN', 'STAFF')
+    @Roles('ADMIN')
     @Patch(':id')
     update(@Param('id') id: string, @Body() updateNewsDto: any) {
         return this.newsService.update(id, updateNewsDto);

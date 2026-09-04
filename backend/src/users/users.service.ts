@@ -20,7 +20,8 @@ export class UsersService {
   }
 
   async findAll() {
-    return this.prisma.user.findMany();
+    const users = await this.prisma.user.findMany();
+    return users.map(({ password: _pw, ...user }) => user);
   }
 
   async findOne(email: string): Promise<User | null> {

@@ -15,9 +15,10 @@ import { AuthModule } from './auth/auth.module';
 import { SettingsModule } from './settings/settings.module';
 import { NewsModule } from './news/news.module';
 import { ServiceRecordsModule } from './service-records/service-records.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UsersModule, ClientsModule, ServicesModule, ServiceCategoriesModule, StaffModule, AppointmentsModule, ProductsModule, SalesModule, ReportsModule, SettingsModule, NewsModule, ServiceRecordsModule],
+  imports: [PrismaModule, AuthModule, UsersModule, ClientsModule, ServicesModule, ServiceCategoriesModule, StaffModule, AppointmentsModule, ProductsModule, SalesModule, ReportsModule, SettingsModule, NewsModule, ServiceRecordsModule, MessagesModule],
   controllers: [AppController],
   providers: [AppService],
 })

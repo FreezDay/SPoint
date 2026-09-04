@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
 import { StaffService } from './staff.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
@@ -37,7 +37,7 @@ export class StaffController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.staffService.remove(id);
+  remove(@Param('id') id: string, @Request() req: any) {
+    return this.staffService.remove(id, req.user.id);
   }
 }

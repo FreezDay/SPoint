@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateServiceRecordDto } from './dto/create-service-record.dto';
+import { UpdateServiceRecordDto } from './dto/update-service-record.dto';
 
 @Injectable()
 export class ServiceRecordsService {
@@ -23,6 +24,37 @@ export class ServiceRecordsService {
       },
       include: { staff: { select: { id: true, name: true } } },
     });
+  }
+
+  async update(id: string, dto: UpdateServiceRecordDto) {
+    const existing = await this.prisma.serviceRecord.findUnique({ where: { id } });
+    if (!existing) throw new ForbiddenException('Service record not found');
+
+    let staffId = dto.staffId ?? existing.staffId;
+    if (dto.staffId && dto.staffId !== existing.staffId) {
+      const staff = await this.prisma.user.findUnique({ where: { id: staffId } });
+      if (!staff) throw new ForbiddenException('A valid staff member is required');
+    }
+
+    return this.prisma.serviceRecord.update({
+      where: { id },
+      data: {
+        serviceName: dto.serviceName,
+        amount: dto.amount !== undefined ? Number(dto.amount) : undefined,
+        serviceDate: dto.serviceDate ? new Date(dto.serviceDate) : undefined,
+        clientName: dto.clientName,
+        paymentMethod: dto.paymentMethod,
+        staffId,
+        clientId: dto.clientId,
+      },
+      include: { staff: { select: { id: true, name: true } } },
+    });
+  }
+
+  async remove(id: string) {
+    const existing = await this.prisma.serviceRecord.findUnique({ where: { id } });
+    if (!existing) throw new ForbiddenException('Service record not found');
+    return this.prisma.serviceRecord.delete({ where: { id } });
   }
 
   findAll(currentUser: { id: string; role: string }) {

@@ -16,4 +16,8 @@ export class CreateStaffDto {
     @IsString()
     @IsOptional()
     avatar?: string;
+
+    @IsString()
+    @IsOptional()
+    password?: string;
 }

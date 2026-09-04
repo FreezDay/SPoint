@@ -33,17 +33,21 @@ export class ClientsService {
   }
 
   async findAll() {
-    return this.prisma.user.findMany({
+    const users = await this.prisma.user.findMany({
       where: { role: 'CLIENT' },
       include: { clientProfile: true },
     });
+    return users.map(({ password: _pw, ...user }) => user);
   }
 
   async findOne(id: string) {
-    return this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { id },
       include: { clientProfile: true },
     });
+    if (!user) return null;
+    const { password: _pw, ...safe } = user;
+    return safe;
   }
 
   async update(id: string, updateClientDto: UpdateClientDto) {

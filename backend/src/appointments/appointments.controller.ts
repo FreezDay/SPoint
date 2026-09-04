@@ -52,7 +52,7 @@ export class AppointmentsController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('ADMIN', 'STAFF')
+  @Roles('ADMIN')
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAppointmentDto: UpdateAppointmentDto) {
     return this.appointmentsService.update(id, updateAppointmentDto);

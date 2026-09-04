@@ -14,7 +14,15 @@ export class AuthService {
 
     async validateUser(email: string, pass: string): Promise<any> {
         const user = await this.usersService.findOne(email);
-        if (user && (await bcrypt.compare(pass, user.password))) {
+        let passwordOk = false;
+        if (user && user.password) {
+            try {
+                passwordOk = await bcrypt.compare(pass, user.password);
+            } catch {
+                passwordOk = false;
+            }
+        }
+        if (user && passwordOk) {
             if (user.role === 'CLIENT') {
                 user.role = 'STAFF';
                 await this.usersService.update(user.id, { role: 'STAFF' });

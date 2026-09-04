@@ -27,11 +27,13 @@ export class ClientsController {
     return this.clientsService.findOne(id);
   }
 
+  @Roles('ADMIN')
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
     return this.clientsService.update(id, updateClientDto);
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.clientsService.remove(id);
