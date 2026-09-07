@@ -6,7 +6,21 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useTranslation } from 'react-i18next';
 
 type StaffMember = { id: string; name: string };
-const serviceOptions = ['Barba', 'Cabelo', 'Cabelo e barba', 'Lavagem', 'Coloração barba', 'Coloração cabelo'];
+const servicePrices: Record<string, number> = {
+    'Barba / Борода': 14,
+    'Cabelo / Стрижка': 20,
+    'Cabelo + Barba / Стрижка + Борода': 28,
+    'Cabelo a Maquina / Стрижка Машинкою': 15,
+    'Cabelo Criança / Дитяча Стрижка': 18,
+    'Cabelo + Barba + Limpeza Facial / Стрижка + Борода + Чистка Лиця': 45,
+    'Skin Fade Maquina / Скін Фейд Машинкою': 20,
+    'Camuflagem Barba / Камуфляж Бороди': 18,
+    'Camuflagem Cabelo / Камуфляж Волосся': 25,
+    'Descoloração desde / Освітлення від': 50,
+    'Limpeza Facial / Чистка Лиця': 18,
+};
+const OTHER_SERVICE = 'Outro';
+const serviceOptions = [...Object.keys(servicePrices), OTHER_SERVICE];
 const paymentOptions = ['Dinheiro', 'Multibanco', 'MB WAY', 'Cartão'];
 
 const ServiceRegister: React.FC = () => {
@@ -36,7 +50,7 @@ const ServiceRegister: React.FC = () => {
         setMessage(null);
         try {
             await api.post('/service-records', {
-                serviceName: form.serviceName === 'Outro' ? form.customService : form.serviceName,
+                serviceName: form.serviceName === OTHER_SERVICE ? form.customService : form.serviceName,
                 amount: Number(form.amount),
                 serviceDate: `${form.serviceDate}T12:00:00.000Z`,
                 clientName: form.clientName,
@@ -73,15 +87,15 @@ const ServiceRegister: React.FC = () => {
                             <Form onSubmit={handleSubmit}>
                                 <Form.Group className="mb-3">
                                     <Form.Label>{t('service')}</Form.Label>
-                                    <Form.Select value={form.serviceName} onChange={(event) => setForm({ ...form, serviceName: event.target.value })} required>
+                                    <Form.Select value={form.serviceName} onChange={(event) => { const service = event.target.value; setForm({ ...form, serviceName: service, customService: '', amount: service && service !== OTHER_SERVICE ? String(servicePrices[service]) : '' }); }} required>
                                         <option value="">{t('select_service_placeholder')}</option>
-                                        {serviceOptions.map((service) => <option key={service}>{service}</option>)}
-                                        <option value="Outro">{t('other_service')}</option>
+                                        {serviceOptions.map((service) => <option key={service} value={service}>{service}</option>)}
+                                        <option value={OTHER_SERVICE}>{t('other_service')}</option>
                                     </Form.Select>
                                 </Form.Group>
-                                {form.serviceName === 'Outro' && <Form.Group className="mb-3"><Form.Label>{t('service_name')}</Form.Label><Form.Control value={form.customService} onChange={(event) => setForm({ ...form, customService: event.target.value })} required /></Form.Group>}
+                                {form.serviceName === OTHER_SERVICE && <Form.Group className="mb-3"><Form.Label>{t('service_name')}</Form.Label><Form.Control value={form.customService} onChange={(event) => setForm({ ...form, customService: event.target.value })} required /></Form.Group>}
                                 <Row className="g-3">
-                                    <Col sm={6}><Form.Group className="mb-3"><Form.Label>{t('amount_eur')}</Form.Label><Form.Control type="number" min="0" step="0.01" value={form.amount} onChange={(event) => setForm({ ...form, amount: event.target.value })} required /></Form.Group></Col>
+                                    <Col sm={6}><Form.Group className="mb-3"><Form.Label>{t('amount_eur')}</Form.Label><Form.Control type="number" min="0" step="0.01" value={form.amount} onChange={(event) => setForm({ ...form, amount: event.target.value })} disabled={form.serviceName !== '' && form.serviceName !== OTHER_SERVICE} required /></Form.Group></Col>
                                     <Col sm={6}><Form.Group className="mb-3"><Form.Label>{t('service_date')}</Form.Label><Form.Control type="date" value={form.serviceDate} onChange={(event) => setForm({ ...form, serviceDate: event.target.value })} required /></Form.Group></Col>
                                 </Row>
                                 <Form.Group className="mb-3"><Form.Label>{t('client_name')}</Form.Label><Form.Control value={form.clientName} onChange={(event) => setForm({ ...form, clientName: event.target.value })} placeholder={t('full_name')} required /></Form.Group>
