@@ -20,7 +20,7 @@ const servicePrices: Record<string, number> = {
     'Limpeza Facial / Чистка Лиця': 18,
 };
 const OTHER_SERVICE = 'Outro';
-const serviceOptions = [...Object.keys(servicePrices), OTHER_SERVICE];
+const serviceOptions = Object.keys(servicePrices);
 const paymentOptions = ['Dinheiro', 'Multibanco', 'MB WAY', 'Cartão'];
 
 const ServiceRegister: React.FC = () => {

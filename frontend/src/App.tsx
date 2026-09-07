@@ -6,12 +6,7 @@ import ServiceRegister from './pages/ServiceRegister';
 import Earnings from './pages/Earnings';
 import Profile from './pages/Profile';
 import Dashboard from './pages/Dashboard';
-import Services from './pages/Services';
 import Staff from './pages/Staff';
-import Appointments from './pages/Appointments';
-import Clients from './pages/Clients';
-import Products from './pages/Products';
-import Sales from './pages/Sales';
 import Layout from './components/Layout';
 import PublicLayout from './components/PublicLayout';
 import api from './lib/api';
@@ -90,23 +85,8 @@ function App() {
           <Route path="dashboard" element={
             <ProtectedRoute roles={['ADMIN', 'STAFF']}><Dashboard /></ProtectedRoute>
           } />
-          <Route path="services" element={
-            <ProtectedRoute roles={['ADMIN']}><Services /></ProtectedRoute>
-          } />
           <Route path="staff" element={
             <ProtectedRoute roles={['ADMIN']}><Staff /></ProtectedRoute>
-          } />
-          <Route path="appointments" element={
-            <ProtectedRoute roles={['ADMIN']}><Appointments /></ProtectedRoute>
-          } />
-          <Route path="clients" element={
-            <ProtectedRoute roles={['ADMIN']}><Clients /></ProtectedRoute>
-          } />
-          <Route path="products" element={
-            <ProtectedRoute roles={['ADMIN']}><Products /></ProtectedRoute>
-          } />
-          <Route path="sales" element={
-            <ProtectedRoute roles={['ADMIN']}><Sales /></ProtectedRoute>
           } />
           <Route path="register-service" element={<ProtectedRoute roles={['ADMIN', 'STAFF']}><ServiceRegister /></ProtectedRoute>} />
           <Route path="earnings" element={<ProtectedRoute roles={['ADMIN', 'STAFF']}><Earnings /></ProtectedRoute>} />
