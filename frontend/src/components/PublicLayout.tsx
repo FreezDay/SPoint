@@ -8,6 +8,7 @@ import api from '../lib/api';
 const PublicLayout: React.FC = () => {
     const { t, i18n } = useTranslation();
     const [settings, setSettings] = React.useState<any>(null);
+    const [expanded, setExpanded] = React.useState(false);
 
     React.useEffect(() => {
         const fetchSettings = async () => {
@@ -27,21 +28,23 @@ const PublicLayout: React.FC = () => {
         i18n.changeLanguage(lng);
     };
 
+    const closeMenu = () => setExpanded(false);
+
     return (
         <div className="d-flex flex-column min-vh-100 bg-light">
             {/* Simple Top Navbar */}
-            <Navbar bg="white" expand="lg" className="border-bottom shadow-sm py-3 px-4">
+            <Navbar bg="white" expand="lg" expanded={expanded} onToggle={(nextExpanded) => setExpanded(nextExpanded)} className="border-bottom shadow-sm py-3 px-4">
                 <Container>
-                    <Navbar.Brand as={Link} to="/" className="fw-bold text-primary fs-4">
+                    <Navbar.Brand as={Link} to="/" onClick={closeMenu} className="fw-bold text-primary fs-4">
                         {settings?.business_name || t('business_name')}
                     </Navbar.Brand>
                     <Navbar.Toggle aria-controls="public-navbar-nav" />
                     <Navbar.Collapse id="public-navbar-nav" className="justify-content-end">
                         <Nav className="align-items-center">
-                            <Nav.Link as={Link} to="/book-online" className="me-3 fw-semibold text-dark">
+                            <Nav.Link as={Link} to="/book-online" onClick={closeMenu} className="me-3 fw-semibold text-dark">
                                 {t('book_online')}
                             </Nav.Link>
-                            <Nav.Link as={Link} to="/shop" className="me-3 fw-semibold text-dark">
+                            <Nav.Link as={Link} to="/shop" onClick={closeMenu} className="me-3 fw-semibold text-dark">
                                 {t('shop')}
                             </Nav.Link>
                             <NavDropdown
@@ -58,7 +61,7 @@ const PublicLayout: React.FC = () => {
                                 <NavDropdown.Item onClick={() => changeLanguage('pt')}>Português</NavDropdown.Item>
                                 <NavDropdown.Item onClick={() => changeLanguage('uk')}>Українська</NavDropdown.Item>
                             </NavDropdown>
-                            <Link to="/login" className="btn btn-primary btn-sm d-flex align-items-center gap-2 px-4 py-2 rounded-pill fw-bold">
+                            <Link to="/login" onClick={closeMenu} className="btn btn-primary btn-sm d-flex align-items-center gap-2 px-4 py-2 rounded-pill fw-bold">
                                 <LogIn size={16} /> {t('login_btn')}
                             </Link>
                         </Nav>

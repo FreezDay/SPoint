@@ -12,6 +12,7 @@ const Layout: React.FC = () => {
     const location = useLocation();
     const { t, i18n } = useTranslation();
     const [settings, setSettings] = React.useState<any>(null);
+    const [expanded, setExpanded] = React.useState(false);
 
     React.useEffect(() => {
         const fetchSettings = async () => {
@@ -33,6 +34,8 @@ const Layout: React.FC = () => {
     const changeLanguage = (lng: string) => {
         i18n.changeLanguage(lng);
     };
+
+    const closeMenu = () => setExpanded(false);
 
     const adminNavItems = [
         { path: '/dashboard', icon: <LayoutDashboard size={20} />, label: t('dashboard') },
@@ -59,9 +62,9 @@ const Layout: React.FC = () => {
     return (
         <div className="d-flex flex-column min-vh-100">
             {/* Top Navbar */}
-            <Navbar bg="white" expand="lg" className="border-bottom shadow-sm py-3 px-4 fixed-top">
+            <Navbar bg="white" expand="lg" expanded={expanded} onToggle={(nextExpanded) => setExpanded(nextExpanded)} className="border-bottom shadow-sm py-3 px-4 fixed-top">
                 <Container fluid>
-                    <Navbar.Brand as={Link} to="/" className="fw-bold text-primary fs-4">
+                    <Navbar.Brand as={Link} to="/" onClick={closeMenu} className="fw-bold text-primary fs-4">
                         {settings?.business_name || t('business_name')}
                     </Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -92,6 +95,7 @@ const Layout: React.FC = () => {
                                     key={`mobile-${item.path}`}
                                     as={Link}
                                     to={item.path}
+                                    onClick={closeMenu}
                                     className={`px-3 py-2 d-flex align-items-center gap-3 ${location.pathname === item.path ? 'bg-primary text-white rounded-3' : 'text-dark'}`}
                                 >
                                     {item.icon} {item.label}
