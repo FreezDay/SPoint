@@ -3,7 +3,7 @@ import axios from 'axios';
 const api = axios.create({
     baseURL:
         import.meta.env.VITE_API_URL ||
-        (import.meta.env.PROD ? 'https://serviceapp-backend-bckn.onrender.com' : 'http://localhost:3000'),
+        (import.meta.env.PROD ? 'https://serviceapp-backend-v81q.onrender.com' : 'http://localhost:3000'),
     headers: {
         'Content-Type': 'application/json',
     },
