@@ -1,0 +1,64 @@
+name: Renew Postgres
+
+# Render free-tier Postgres expires 30 days after creation. This workflow runs
+# daily and, when the database has <= 2 days of life left, rotates it:
+# dump -> suspend old -> create new (fresh 30 days) -> restore -> flip
+# DATABASE_URL -> deploy -> verify -> delete old.
+#
+# Prerequisite: repository secret RENDER_API_KEY (a long-lived Render API key
+# with access to the workspace that holds the serviceapp-backend service).
+
+on:
+  schedule:
+    - cron: "23 4 * * *" # 04:23 UTC daily
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Renew now even if not close to expiry"
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  renew:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      FORCE: ${{ github.event.inputs.force == 'true' && '1' || '0' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install PostgreSQL client (for pg_dump/psql)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends postgresql-client
+
+      - name: Check expiry and renew if due
+        id: renew
+        run: node scripts/renew-postgres.mjs
+
+      - name: Open issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Postgres renewal failed" \
+            --body "The automated Postgres renewal run failed.
+
+See the failing run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+
+Action needed:
+- If the old database was suspended but not yet deleted, resume it (Render dashboard) — the app keeps working on it until its expiry date.
+- Run the workflow manually (Actions -> Renew Postgres -> Run workflow) after fixing the cause.
+- Dump/restore commands for a manual rotation are in scripts/renew-postgres.mjs."
