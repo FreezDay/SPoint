@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { LayoutDashboard, LogOut, Globe, Settings, ClipboardPlus, TrendingUp, UserRound, UserCog } from 'lucide-react';
+import { LayoutDashboard, LogOut, Globe, Settings, ClipboardPlus, TrendingUp, Users } from 'lucide-react';
 import { Navbar, Nav, Container, Button, NavDropdown } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import api from '../lib/api';
@@ -37,22 +37,18 @@ const Layout: React.FC = () => {
 
     const closeMenu = () => setExpanded(false);
 
-    const adminNavItems = [
+    // Admin sees the full menu. Non-admin accounts (staff) only reach
+    // Definições (Settings); team management now lives inside Settings.
+    const adminItems = [
         { path: '/dashboard', icon: <LayoutDashboard size={20} />, label: t('dashboard') },
-        { path: '/staff', icon: <UserCog size={20} />, label: t('staff') },
+        { path: '/crm', icon: <Users size={20} />, label: 'CRM' },
         { path: '/register-service', icon: <ClipboardPlus size={20} />, label: 'Registar serviço' },
         { path: '/earnings', icon: <TrendingUp size={20} />, label: 'Ganhos' },
         { path: '/configuration', icon: <Settings size={20} />, label: t('settings') },
     ];
-
-    const navItems = user?.role === 'STAFF'
-        ? [
-            { path: '/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
-            { path: '/register-service', icon: <ClipboardPlus size={20} />, label: 'Registar serviços' },
-            { path: '/earnings', icon: <TrendingUp size={20} />, label: 'Ganhos' },
-            { path: '/profile', icon: <UserRound size={20} />, label: 'Perfil' },
-        ]
-        : adminNavItems;
+    const navItems = user?.role === 'ADMIN'
+        ? adminItems
+        : [{ path: '/configuration', icon: <Settings size={20} />, label: t('settings') }];
 
     return (
         <div className="d-flex flex-column min-vh-100">
@@ -91,7 +87,7 @@ const Layout: React.FC = () => {
                                     as={Link}
                                     to={item.path}
                                     onClick={closeMenu}
-                                    className={`px-3 py-2 d-flex align-items-center gap-3 ${location.pathname === item.path ? 'bg-primary text-white rounded-3' : 'text-dark'}`}
+                                    className={`px-3 py-2 d-flex align-items-center gap-3 ${location.pathname === item.path || location.pathname.startsWith(`${item.path}/`) ? 'bg-primary text-white rounded-3' : 'text-dark'}`}
                                 >
                                     {item.icon} {item.label}
                                 </Nav.Link>
@@ -109,7 +105,7 @@ const Layout: React.FC = () => {
                             key={item.path}
                             as={Link}
                             to={item.path}
-                            className={`px-4 py-3 d-flex align-items-center gap-3 transition-all ${location.pathname === item.path ? 'bg-primary text-white shadow-sm mx-3 rounded-3' : 'text-dark hover-bg-light'}`}
+                            className={`px-4 py-3 d-flex align-items-center gap-3 transition-all ${location.pathname === item.path || location.pathname.startsWith(`${item.path}/`) ? 'bg-primary text-white shadow-sm mx-3 rounded-3' : 'text-dark hover-bg-light'}`}
                         >
                             {item.icon} {item.label}
                         </Nav.Link>
@@ -122,7 +118,7 @@ const Layout: React.FC = () => {
                         <Outlet />
                     </Container>
                     <footer className="mt-auto pt-5 pb-4 text-center text-muted small border-top">
-                        <p className="mb-0">{t('designed_by')} <span className="fw-bold text-primary">Munitum</span></p>
+                        <p className="mb-0">{t('designed_by')} <span className="fw-bold text-primary">BrandTAR</span></p>
                     </footer>
                 </main>
             </div>

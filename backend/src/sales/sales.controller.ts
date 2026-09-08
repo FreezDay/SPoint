@@ -22,14 +22,14 @@ export class SalesController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('ADMIN', 'STAFF')
+  @Roles('ADMIN')
   @Get()
   findAll() {
     return this.salesService.findAll();
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('ADMIN', 'STAFF')
+  @Roles('ADMIN')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.salesService.findOne(id);

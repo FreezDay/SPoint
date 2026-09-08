@@ -12,7 +12,7 @@ export class ServicesController {
   constructor(private readonly servicesService: ServicesService) { }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('ADMIN', 'STAFF')
+  @Roles('ADMIN')
   @Post()
   create(@Body() createServiceDto: CreateServiceDto) {
     return this.servicesService.create(createServiceDto);

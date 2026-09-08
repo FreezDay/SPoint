@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { ClientsModule } from './clients/clients.module';
 import { ServicesModule } from './services/services.module';
 import { ServiceCategoriesModule } from './service-categories/service-categories.module';
 import { StaffModule } from './staff/staff.module';
@@ -16,9 +15,10 @@ import { SettingsModule } from './settings/settings.module';
 import { NewsModule } from './news/news.module';
 import { ServiceRecordsModule } from './service-records/service-records.module';
 import { MessagesModule } from './messages/messages.module';
+import { CrmModule } from './crm/crm.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UsersModule, ClientsModule, ServicesModule, ServiceCategoriesModule, StaffModule, AppointmentsModule, ProductsModule, SalesModule, ReportsModule, SettingsModule, NewsModule, ServiceRecordsModule, MessagesModule],
+  imports: [PrismaModule, AuthModule, UsersModule, ServicesModule, ServiceCategoriesModule, StaffModule, AppointmentsModule, ProductsModule, SalesModule, ReportsModule, SettingsModule, NewsModule, ServiceRecordsModule, MessagesModule, CrmModule],
   controllers: [AppController],
   providers: [AppService],
 })

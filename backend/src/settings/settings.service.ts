@@ -22,7 +22,12 @@ export class SettingsService implements OnModuleInit {
             { key: 'business_google_maps', value: 'https://maps.google.com' },
             { key: 'service_address', value: 'Rua de Exemplo 123, Lisboa' },
             { key: 'business_name', value: 'Munitum' },
-            { key: 'staff_commission_rates', value: JSON.stringify({}) }
+            { key: 'staff_commission_rates', value: JSON.stringify({}) },
+            // Percentage of the charged value that stays with the worker:
+            // - own client + own material
+            // - studio client + studio material
+            { key: 'rate_own_client_own_material', value: '100' },
+            { key: 'rate_studio_client_studio_material', value: '70' }
         ];
 
         for (const setting of defaults) {

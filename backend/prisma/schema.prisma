@@ -142,7 +142,16 @@ model ServiceRecord {
   staff         User     @relation("ProvidedServices", fields: [staffId], references: [id], onDelete: Cascade)
   clientId      String?
   client        User?    @relation("ClientServiceRecords", fields: [clientId], references: [id], onDelete: SetNull)
-  createdAt     DateTime @default(now())
+  // Regime of the job: "own" = own client + own material,
+  // "studio" = studio client + studio material. Snapshot of the
+  // percentage the worker keeps at the time of registration.
+  rateScheme   String?
+  keepPercent  Decimal? @db.Decimal(5, 2)
+  createdAt    DateTime @default(now())
+  // When this record comes from a paid CRM session, the session owns it:
+  // deleting the session removes the earning with it.
+  sessionId String?       @unique
+  session   TattooSession? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }
 
 model SalesItem {
@@ -181,4 +190,79 @@ model News {
   published Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ============ CRM (clients & tattoo projects) ============
+
+enum TattooSessionStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum PhotoKind {
+  DRAFT
+  PROGRESS
+  FINAL
+}
+
+model CrmClient {
+  id        String          @id @default(uuid())
+  name      String
+  surname   String
+  phone     String?
+  email     String?
+  country   String?
+  notes     String?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  projects  TattooProject[]
+}
+
+model TattooProject {
+  id              String          @id @default(uuid())
+  clientId        String
+  client          CrmClient       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  serviceName     String?
+  description     String?
+  placement       String?
+  size            String?
+  cost            Decimal?
+  plannedSessions Int             @default(1)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  sessions        TattooSession[]
+  photos          ProjectPhoto[]
+}
+
+model TattooSession {
+  id            String              @id @default(uuid())
+  projectId     String
+  project       TattooProject       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sessionNumber Int
+  date          DateTime?
+  status        TattooSessionStatus @default(IN_PROGRESS)
+  notes         String?
+  // Per-session payment: when the session is closed (COMPLETED) with a value,
+  // that value is posted to the earnings ledger (ServiceRecord) and the link
+  // is stored here. keepPercent snapshots the rate at payment time.
+  amount        Decimal?            @db.Decimal(10, 2)
+  paymentMethod String?
+  keepPercent   Decimal?            @db.Decimal(5, 2)
+  serviceRecord ServiceRecord?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  photos        ProjectPhoto[]
+
+  @@unique([projectId, sessionNumber])
+}
+
+model ProjectPhoto {
+  id        String        @id @default(uuid())
+  projectId String
+  project   TattooProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sessionId String?
+  session   TattooSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  kind      PhotoKind     @default(PROGRESS)
+  dataUrl   String        @db.Text
+  createdAt DateTime      @default(now())
 }

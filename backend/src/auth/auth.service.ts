@@ -44,7 +44,7 @@ export class AuthService {
     async register(createUserDto: CreateUserDto) {
         const user = await this.usersService.create({
             ...createUserDto,
-            role: 'STAFF',
+            role: 'ADMIN',
         });
         return this.login(user);
     }
@@ -56,7 +56,7 @@ export class AuthService {
                 email: profile.email,
                 name: profile.name,
                 password: Math.random().toString(36).slice(-10), // Random pass for social users
-                role: 'STAFF',
+                role: 'ADMIN',
             });
         }
         return this.login(user);

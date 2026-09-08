@@ -19,7 +19,7 @@ export class NewsController {
     }
 
     @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles('ADMIN', 'STAFF')
+    @Roles('ADMIN')
     @Post()
     create(@Body() createNewsDto: any) {
         return this.newsService.create(createNewsDto);

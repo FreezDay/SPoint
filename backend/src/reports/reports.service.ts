@@ -17,13 +17,20 @@ export class ReportsService {
     const [recentServices, commissionSetting, records] = await Promise.all([
       this.prisma.serviceRecord.findMany({ where: ownership, take: 8, orderBy: { serviceDate: 'desc' }, include: { staff: { select: { name: true } } } }),
       this.prisma.globalSetting.findUnique({ where: { key: 'staff_commission_rates' } }),
-      this.prisma.serviceRecord.findMany({ where: ownership, select: { serviceName: true, amount: true, staffId: true, serviceDate: true, staff: { select: { name: true } } } }),
+      this.prisma.serviceRecord.findMany({ where: ownership, select: { serviceName: true, amount: true, staffId: true, serviceDate: true, keepPercent: true, staff: { select: { name: true } } } }),
     ]);
     const rates = commissionSetting ? JSON.parse(commissionSetting.value) as Record<string, number> : {};
     const roundMoney = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
     const grossFor = (from: Date) => records.filter((record) => record.serviceDate >= from).reduce((total, record) => total + Number(record.amount), 0);
-    const netFor = (from: Date) => roundMoney(records.filter((record) => record.serviceDate >= from).reduce((total, record) => total + Number(record.amount) * (1 - (Number(rates[record.staffId]) || 0) / 100), 0));
-    const netAmount = (record: { amount: unknown; staffId: string }) => roundMoney(Number(record.amount) * (1 - (Number(rates[record.staffId]) || 0) / 100));
+    // New registrations carry a snapshot of the chosen keep-rate
+    // (rateScheme 'own'/'studio'). Legacy records fall back to the old
+    // per-staff commission formula.
+    const netOf = (record: { amount: unknown; staffId: string; keepPercent?: unknown }) =>
+      record.keepPercent !== null && record.keepPercent !== undefined
+        ? Number(record.amount) * (Number(record.keepPercent) / 100)
+        : Number(record.amount) * (1 - (Number(rates[record.staffId]) || 0) / 100);
+    const netFor = (from: Date) => roundMoney(records.filter((record) => record.serviceDate >= from).reduce((total, record) => total + netOf(record), 0));
+    const netAmount = (record: { amount: unknown; staffId: string; keepPercent?: unknown }) => roundMoney(netOf(record));
     const breakdownFor = (from: Date) => {
       const totals = new Map<string, number>();
       records.filter((record) => record.serviceDate >= from).forEach((record) => {

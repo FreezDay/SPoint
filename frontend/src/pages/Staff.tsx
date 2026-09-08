@@ -27,7 +27,7 @@ const AVATARS = [
     'https://api.dicebear.com/7.x/bottts/svg?seed=Staff10&backgroundColor=ffffff',
 ];
 
-const StaffPage: React.FC = () => {
+const StaffPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
     const { t } = useTranslation();
     const [staffList, setStaffList] = useState<Staff[]>([]);
     const [loading, setLoading] = useState(true);
@@ -100,8 +100,8 @@ const StaffPage: React.FC = () => {
     };
 
     return (
-        <div className="py-4">
-            <div className="d-flex justify-content-between align-items-center mb-4">
+        <div className={embedded ? '' : 'py-4'}>
+            {!embedded && <div className="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h1 className="h3 mb-1 fw-bold text-dark">{t('team_members')}</h1>
                     <p className="text-secondary mb-0">{t('manage_staff_desc')}</p>
@@ -114,7 +114,12 @@ const StaffPage: React.FC = () => {
                     <Plus size={20} />
                     {t('add')} {t('staff')}
                 </Button>
-            </div>
+            </div>}
+            {embedded && <div className="d-flex justify-content-end mb-3">
+                <Button variant="primary" size="sm" className="rounded-pill px-3 d-inline-flex align-items-center gap-1" onClick={handleOpenCreate}>
+                    <Plus size={16} />{t('add')} {t('staff')}
+                </Button>
+            </div>}
 
             <Row className="g-4">
                 {loading ? (

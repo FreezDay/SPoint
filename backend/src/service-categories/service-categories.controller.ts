@@ -11,7 +11,7 @@ export class ServiceCategoriesController {
   constructor(private readonly serviceCategoriesService: ServiceCategoriesService) { }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('ADMIN', 'STAFF')
+  @Roles('ADMIN')
   @Post()
   create(@Body() createServiceCategoryDto: CreateServiceCategoryDto) {
     return this.serviceCategoriesService.create(createServiceCategoryDto);
