@@ -56,9 +56,9 @@ jobs:
             --title "Postgres renewal failed" \
             --body "The automated Postgres renewal run failed.
 
-See the failing run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+            See the failing run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
 
-Action needed:
-- If the old database was suspended but not yet deleted, resume it (Render dashboard) — the app keeps working on it until its expiry date.
-- Run the workflow manually (Actions -> Renew Postgres -> Run workflow) after fixing the cause.
-- Dump/restore commands for a manual rotation are in scripts/renew-postgres.mjs."
+            Action needed:
+            - If the old database was suspended but not yet deleted, resume it (Render dashboard) — the app keeps working on it until its expiry date.
+            - Run the workflow manually (Actions -> Renew Postgres -> Run workflow) after fixing the cause.
+            - Dump/restore commands for a manual rotation are in scripts/renew-postgres.mjs."
