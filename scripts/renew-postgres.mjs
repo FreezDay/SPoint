@@ -16,10 +16,12 @@
  * change. Failure to delete at step 7 is harmless (next run cleans up).
  *
  * Requires: node >= 18, psql and pg_dump on PATH, RENDER_API_KEY.
- * Optional env: RENDER_SERVICE_NAME (serviceapp-backend),
- *               RENDER_PG_PREFIX (serviceapp-db), RENEW_DAYS_BEFORE (2),
- *               OWNER_ID override, DRY_RUN=1 (read-only plan), FORCE=1
- *               (renew even if not due), VERIFY_ONLY=1.
+ * Optional env: RENDER_SERVICE_ID (looked up directly, takes precedence) or
+ *               RENDER_SERVICE_NAME (serviceapp-backend, resolved by listing
+ *               services in the workspace), RENDER_PG_PREFIX (serviceapp-db),
+ *               RENEW_DAYS_BEFORE (2), OWNER_ID override, DRY_RUN=1
+ *               (read-only plan), FORCE=1 (renew even if not due),
+ *               VERIFY_ONLY=1.
  */
 import { execFileSync } from 'node:child_process';
 import { readFileSync, existsSync } from 'node:fs';
@@ -40,7 +42,8 @@ if (!KEY) {
     }
   }
 }
-const SERVICE_NAME = process.env.RENDER_SERVICE_NAME || 'serviceapp-backend';
+const SERVICE_ID = process.env.RENDER_SERVICE_ID || null;
+const SERVICE_NAME = process.env.RENDER_SERVICE_NAME || (SERVICE_ID ? null : 'serviceapp-backend');
 const PG_PREFIX = process.env.RENDER_PG_PREFIX || 'serviceapp-db';
 const DAYS_BEFORE = Number(process.env.RENEW_DAYS_BEFORE || 2) + 0.5; // catch the daily window
 const OWNER_ID = process.env.OWNER_ID || null;
@@ -76,13 +79,20 @@ async function main() {
   // 1. resolve the current database (the one the web service points at)
   const pgList = await api('GET', '/postgres');
   const pgEntries = pgList.map((e) => e.postgres).filter(Boolean);
-  const serviceList = await api('GET', '/services');
-  const svcEntry = serviceList.find((e) => e.service && e.service.name === SERVICE_NAME);
-  if (!svcEntry) fail(`web service "${SERVICE_NAME}" not found`);
-  const service = svcEntry.service;
+  let service;
+  if (SERVICE_ID) {
+    const raw = await api('GET', `/services/${SERVICE_ID}`);
+    service = raw.service || raw;
+    if (!service || !service.id) fail(`web service id "${SERVICE_ID}" not found`);
+  } else {
+    const serviceList = await api('GET', '/services');
+    const svcEntry = serviceList.find((e) => e.service && e.service.name === SERVICE_NAME);
+    if (!svcEntry) fail(`web service "${SERVICE_NAME}" not found`);
+    service = svcEntry.service;
+  }
   const serviceId = service.id;
   const serviceUrl = service.serviceDetails?.url;
-  console.log('service:', SERVICE_NAME, serviceId, '|', serviceUrl);
+  console.log('service:', service.name, serviceId, '|', serviceUrl);
 
   const envVars = await api('GET', `/services/${serviceId}/env-vars`);
   const dbEnv = (envVars || []).find((e) => e.envVar?.key === 'DATABASE_URL')?.envVar?.value;
