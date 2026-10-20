@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/com
 import { PrismaService } from '../prisma.service';
 import { CreateServiceRecordDto } from './dto/create-service-record.dto';
 import { UpdateServiceRecordDto } from './dto/update-service-record.dto';
+import { calculateEarningsSplit } from './earnings-calculation';
 
 @Injectable()
 export class ServiceRecordsService {
@@ -94,20 +95,18 @@ export class ServiceRecordsService {
       orderBy: { serviceDate: 'desc' },
       take: 500,
       include: {
-        staff: { select: { name: true } },
+        staff: { select: { name: true, role: true } },
         session: { select: { id: true, sessionNumber: true, projectId: true } },
       },
     });
     const rate = currentUser.role === 'ADMIN' ? null : Number(rates[currentUser.id]) || 0;
     const commissionFor = (staffId: string) => Number(rates[staffId]) || 0;
     const roundMoney = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
-    // New registrations carry a snapshot of the chosen keep-rate
-    // (rateScheme 'own'/'studio'). Legacy records fall back to the old
-    // per-staff commission formula.
-    const netAmount = (record: { amount: unknown; staffId: string; keepPercent?: unknown }) =>
-      record.keepPercent !== null && record.keepPercent !== undefined
-        ? roundMoney(Number(record.amount) * (Number(record.keepPercent) / 100))
-        : roundMoney(Number(record.amount) * (1 - commissionFor(record.staffId) / 100));
+    const split = (record: { amount: unknown; staffId: string; keepPercent?: unknown; staff?: { role?: string } | null }) =>
+      calculateEarningsSplit({ ...record, isAdminArtist: record.staff?.role === 'ADMIN' }, commissionFor(record.staffId));
+    const netAmount = (record: { amount: unknown; staffId: string; keepPercent?: unknown }) => split(record).staffAmount;
+    const displayedAmount = (record: { amount: unknown; staffId: string; keepPercent?: unknown }) =>
+      currentUser.role === 'ADMIN' ? roundMoney(Number(record.amount)) : netAmount(record);
     const now = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const periods = [1, 7, 15, 30].map((days) => {
@@ -116,7 +115,9 @@ export class ServiceRecordsService {
       const periodRecords = records.filter((record) => record.serviceDate >= start);
       return {
         days,
-        total: periodRecords.reduce((sum, record) => sum + netAmount(record), 0),
+        total: roundMoney(periodRecords.reduce((sum, record) => sum + displayedAmount(record), 0)),
+        staffTotal: roundMoney(periodRecords.reduce((sum, record) => sum + split(record).staffAmount, 0)),
+        studioTotal: roundMoney(periodRecords.reduce((sum, record) => sum + split(record).studioAmount, 0)),
         count: periodRecords.length,
       };
     });
@@ -127,7 +128,7 @@ export class ServiceRecordsService {
       nextDate.setDate(date.getDate() + 1);
       return {
         date: date.toISOString().slice(0, 10),
-        total: records.filter((record) => record.serviceDate >= date && record.serviceDate < nextDate).reduce((sum, record) => sum + netAmount(record), 0),
+        total: roundMoney(records.filter((record) => record.serviceDate >= date && record.serviceDate < nextDate).reduce((sum, record) => sum + displayedAmount(record), 0)),
       };
     });
     const paymentMethods = ['Cartão', 'Dinheiro', 'MB WAY', 'Multibanco'];
@@ -146,10 +147,10 @@ export class ServiceRecordsService {
         sessionId: record.session?.id ?? null,
         sessionNumber: record.session?.sessionNumber ?? null,
         projectId: record.session?.projectId ?? null,
-        grossAmount: Number(record.amount),
+        ...split(record),
         keepPercent: record.keepPercent !== null && record.keepPercent !== undefined ? Number(record.keepPercent) : null,
-        commissionRate: record.keepPercent !== null && record.keepPercent !== undefined ? null : commissionFor(record.staffId),
-        commissionAmount: record.keepPercent !== null && record.keepPercent !== undefined ? 0 : roundMoney(Number(record.amount) * commissionFor(record.staffId) / 100),
+        commissionRate: split(record).studioPercent,
+        commissionAmount: split(record).studioAmount,
         netAmount: netAmount(record),
       })),
     };

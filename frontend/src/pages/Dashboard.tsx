@@ -52,9 +52,13 @@ const Dashboard: React.FC = () => {
     const breakdownGradient = selectedBreakdown.length
         ? `conic-gradient(${selectedBreakdown.map((_, index) => `${['#0d6efd', '#20c997', '#fd7e14', '#dc3545', '#6f42c1', '#198754'][index % 6]} ${(selectedBreakdown.slice(0, index).reduce((sum, value) => sum + Number(value.total), 0) / breakdownTotal) * 100}% ${(selectedBreakdown.slice(0, index + 1).reduce((sum, value) => sum + Number(value.total), 0) / breakdownTotal) * 100}%`).join(', ')})`
         : '#e9ecef';
-    const earningValue = (gross: number, net: number) => user?.role === 'ADMIN'
-        ? <><div>€{Number(gross).toFixed(2)}</div><div className="small text-success mt-1">Após comissão: €{Number(net).toFixed(2)}</div></>
-        : `€${Number(net).toFixed(2)}`;
+    const earningValue = (gross: number, net: number) => {
+        if (user?.role !== 'ADMIN') return `€${Number(net).toFixed(2)}`;
+        const studioPercent = gross > 0 ? (net / gross) * 100 : 0;
+        const staffPercent = 100 - studioPercent;
+        const staffAmount = Math.max(0, Number(gross) - Number(net));
+        return <><div>€{Number(gross).toFixed(2)}</div><div className="small text-success mt-1">Admin {studioPercent.toFixed(1)}%: €{Number(net).toFixed(2)} · Equipa {staffPercent.toFixed(1)}%: €{staffAmount.toFixed(2)}</div></>;
+    };
 
     if (loading) {
         return (
@@ -86,7 +90,7 @@ const Dashboard: React.FC = () => {
     return (
         <div className="py-4">
             <h1 className="h3 mb-1 fw-bold text-dark">Dashboard{user?.role === 'STAFF' && user.name ? ` de ${user.name}` : ''}</h1>
-            <p className="text-muted mb-4">Acompanhe os seus valores líquidos e os serviços prestados.</p>
+            <p className="text-muted mb-4">{user?.role === 'ADMIN' ? 'Acompanhe o total cobrado e a divisão entre administração e equipa.' : 'Acompanhe os seus valores líquidos e os serviços prestados.'}</p>
 
             <Row className="g-4 mb-4">
                 <Col xs={12} md={6} lg={3}>

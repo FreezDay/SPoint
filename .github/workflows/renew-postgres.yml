@@ -5,9 +5,7 @@ name: Renew Postgres
 # dump -> suspend old -> create new (fresh 30 days) -> restore -> flip
 # DATABASE_URL -> deploy -> verify -> delete old.
 #
-# Runs once per business instance (each is its own Render workspace/account):
-#   - serviceapp-backend (Maksim/SPoint) - secret RENDER_API_KEY
-#   - srv-dadgmce7bikc73c3vidg (Munitum) - secret RENDER_API_KEY_MUNITUM
+# Runs for the Munitum Render instance; SPoint uses Neon now.
 #
 # Prerequisite: the repository secret for each instance above must be a
 # long-lived Render API key with access to that instance's workspace.
@@ -35,10 +33,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - label: maksim
-            service_name: serviceapp-backend
-            pg_prefix: serviceapp-db
-            api_key_secret: RENDER_API_KEY
           - label: munitum
             service_id: srv-dadgmce7bikc73c3vidg
             pg_prefix: munitum-db

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
+import { calculateEarningsSplit } from '../service-records/earnings-calculation';
 
 @Injectable()
 export class ReportsService {
@@ -15,22 +16,23 @@ export class ReportsService {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const ownership = currentUser.role === 'ADMIN' ? {} : { staffId: currentUser.id };
     const [recentServices, commissionSetting, records] = await Promise.all([
-      this.prisma.serviceRecord.findMany({ where: ownership, take: 8, orderBy: { serviceDate: 'desc' }, include: { staff: { select: { name: true } } } }),
+      this.prisma.serviceRecord.findMany({ where: ownership, take: 8, orderBy: { serviceDate: 'desc' }, include: { staff: { select: { name: true, role: true } } } }),
       this.prisma.globalSetting.findUnique({ where: { key: 'staff_commission_rates' } }),
-      this.prisma.serviceRecord.findMany({ where: ownership, select: { serviceName: true, amount: true, staffId: true, serviceDate: true, keepPercent: true, staff: { select: { name: true } } } }),
+      this.prisma.serviceRecord.findMany({ where: ownership, select: { serviceName: true, amount: true, staffId: true, serviceDate: true, keepPercent: true, staff: { select: { name: true, role: true } } } }),
     ]);
     const rates = commissionSetting ? JSON.parse(commissionSetting.value) as Record<string, number> : {};
     const roundMoney = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
     const grossFor = (from: Date) => records.filter((record) => record.serviceDate >= from).reduce((total, record) => total + Number(record.amount), 0);
-    // New registrations carry a snapshot of the chosen keep-rate
-    // (rateScheme 'own'/'studio'). Legacy records fall back to the old
-    // per-staff commission formula.
-    const netOf = (record: { amount: unknown; staffId: string; keepPercent?: unknown }) =>
-      record.keepPercent !== null && record.keepPercent !== undefined
-        ? Number(record.amount) * (Number(record.keepPercent) / 100)
-        : Number(record.amount) * (1 - (Number(rates[record.staffId]) || 0) / 100);
-    const netFor = (from: Date) => roundMoney(records.filter((record) => record.serviceDate >= from).reduce((total, record) => total + netOf(record), 0));
-    const netAmount = (record: { amount: unknown; staffId: string; keepPercent?: unknown }) => roundMoney(netOf(record));
+    const split = (record: { amount: unknown; staffId: string; keepPercent?: unknown; staff?: { role?: string } | null }) =>
+      calculateEarningsSplit({ ...record, isAdminArtist: record.staff?.role === 'ADMIN' }, Number(rates[record.staffId]) || 0);
+    const staffAmount = (record: { amount: unknown; staffId: string; keepPercent?: unknown }) => split(record).staffAmount;
+    const netFor = (from: Date) => roundMoney(records.filter((record) => record.serviceDate >= from).reduce((total, record) => {
+      const shares = split(record);
+      return total + (currentUser.role === 'ADMIN' ? shares.studioAmount : shares.staffAmount);
+    }, 0));
+    const displayedAmount = (record: { amount: unknown; staffId: string; keepPercent?: unknown }) =>
+      currentUser.role === 'ADMIN' ? roundMoney(Number(record.amount)) : staffAmount(record);
+    const netAmount = (record: { amount: unknown; staffId: string; keepPercent?: unknown }) => staffAmount(record);
     const breakdownFor = (from: Date) => {
       const totals = new Map<string, number>();
       records.filter((record) => record.serviceDate >= from).forEach((record) => {
@@ -71,7 +73,7 @@ export class ReportsService {
       nextDate.setDate(date.getDate() + 1);
       return {
         date: date.toISOString().slice(0, 10),
-        total: records.filter((record) => record.serviceDate >= date && record.serviceDate < nextDate).reduce((sum, record) => sum + netAmount(record), 0),
+        total: roundMoney(records.filter((record) => record.serviceDate >= date && record.serviceDate < nextDate).reduce((sum, record) => sum + displayedAmount(record), 0)),
       };
     });
 
@@ -87,7 +89,7 @@ export class ReportsService {
       grossToday: grossFor(startOfDay),
       grossThisWeek: grossFor(startOfWeek),
       grossThisMonth: grossFor(startOfMonth),
-      recentServices: recentServices.map((service) => ({ ...service, amount: netAmount(service) })),
+      recentServices: recentServices.map((service) => ({ ...service, amount: displayedAmount(service) })),
       chart,
       serviceBreakdown: {
         day: breakdownFor(startOfDay),
