@@ -15,10 +15,9 @@ import { SettingsModule } from './settings/settings.module';
 import { NewsModule } from './news/news.module';
 import { ServiceRecordsModule } from './service-records/service-records.module';
 import { MessagesModule } from './messages/messages.module';
-import { CrmModule } from './crm/crm.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UsersModule, ServicesModule, ServiceCategoriesModule, StaffModule, AppointmentsModule, ProductsModule, SalesModule, ReportsModule, SettingsModule, NewsModule, ServiceRecordsModule, MessagesModule, CrmModule],
+  imports: [PrismaModule, AuthModule, UsersModule, ServicesModule, ServiceCategoriesModule, StaffModule, AppointmentsModule, ProductsModule, SalesModule, ReportsModule, SettingsModule, NewsModule, ServiceRecordsModule, MessagesModule],
   controllers: [AppController],
   providers: [AppService],
 })

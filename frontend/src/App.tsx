@@ -2,13 +2,10 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import ServiceRegister from './pages/ServiceRegister';
+import ServiceRegister from './pages/ServiceRegisterNoCrm';
 import Earnings from './pages/Earnings';
 import Profile from './pages/Profile';
 import Dashboard from './pages/Dashboard';
-import CrmClients from './pages/crm/CrmClients';
-import CrmClientDetail from './pages/crm/CrmClientDetail';
-import CrmProjectDetail from './pages/crm/CrmProjectDetail';
 import Layout from './components/Layout';
 import PublicLayout from './components/PublicLayout';
 import api from './lib/api';
@@ -87,17 +84,8 @@ function App() {
           <Route path="dashboard" element={
             <ProtectedRoute roles={['ADMIN']}><Dashboard /></ProtectedRoute>
           } />
-          <Route path="crm" element={
-            <ProtectedRoute roles={['ADMIN']}><CrmClients /></ProtectedRoute>
-          } />
-          <Route path="crm/clients/:clientId" element={
-            <ProtectedRoute roles={['ADMIN']}><CrmClientDetail /></ProtectedRoute>
-          } />
-          <Route path="crm/projects/:projectId" element={
-            <ProtectedRoute roles={['ADMIN']}><CrmProjectDetail /></ProtectedRoute>
-          } />
-          <Route path="register-service" element={<ProtectedRoute roles={['ADMIN']}><ServiceRegister /></ProtectedRoute>} />
-          <Route path="earnings" element={<ProtectedRoute roles={['ADMIN']}><Earnings /></ProtectedRoute>} />
+          <Route path="register-service" element={<ProtectedRoute roles={['ADMIN', 'STAFF']}><ServiceRegister /></ProtectedRoute>} />
+          <Route path="earnings" element={<ProtectedRoute roles={['ADMIN', 'STAFF']}><Earnings /></ProtectedRoute>} />
           <Route path="profile" element={<ProtectedRoute roles={['ADMIN']}><Profile /></ProtectedRoute>} />
           <Route path="configuration" element={
             <ProtectedRoute><Configuration /></ProtectedRoute>

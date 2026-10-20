@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { LayoutDashboard, LogOut, Globe, Settings, ClipboardPlus, TrendingUp, Users } from 'lucide-react';
+import { LayoutDashboard, LogOut, Globe, Settings, ClipboardPlus, TrendingUp } from 'lucide-react';
 import { Navbar, Nav, Container, Button, NavDropdown } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import api from '../lib/api';
@@ -37,18 +37,20 @@ const Layout: React.FC = () => {
 
     const closeMenu = () => setExpanded(false);
 
-    // Admin sees the full menu. Non-admin accounts (staff) only reach
-    // Definições (Settings); team management now lives inside Settings.
+    // Team access stays within the app; team administration lives in Settings.
     const adminItems = [
         { path: '/dashboard', icon: <LayoutDashboard size={20} />, label: t('dashboard') },
-        { path: '/crm', icon: <Users size={20} />, label: 'CRM' },
         { path: '/register-service', icon: <ClipboardPlus size={20} />, label: 'Registar serviço' },
         { path: '/earnings', icon: <TrendingUp size={20} />, label: 'Ganhos' },
         { path: '/configuration', icon: <Settings size={20} />, label: t('settings') },
     ];
     const navItems = user?.role === 'ADMIN'
         ? adminItems
-        : [{ path: '/configuration', icon: <Settings size={20} />, label: t('settings') }];
+        : [
+            { path: '/register-service', icon: <ClipboardPlus size={20} />, label: 'Registar serviço' },
+            { path: '/earnings', icon: <TrendingUp size={20} />, label: 'Ganhos' },
+            { path: '/configuration', icon: <Settings size={20} />, label: t('settings') },
+        ];
 
     return (
         <div className="d-flex flex-column min-vh-100">
