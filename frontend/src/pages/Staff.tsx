@@ -3,11 +3,13 @@ import api from '../lib/api';
 import { Plus, Mail, User, MoreVertical, Check } from 'lucide-react';
 import { Card, Button, Modal, Form, Row, Col, Spinner, Dropdown, Badge } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '../store/useAuthStore';
 
 interface Staff {
     id: string;
     name: string;
     email: string;
+    role: 'ADMIN' | 'STAFF';
     avatar?: string;
     staffProfile?: {
         bio: string;
@@ -29,11 +31,12 @@ const AVATARS = [
 
 const StaffPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
     const { t } = useTranslation();
+    const { user } = useAuthStore();
     const [staffList, setStaffList] = useState<Staff[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
-    const [formData, setFormData] = useState({ name: '', email: '', bio: '', avatar: AVATARS[0], password: '' });
+    const [formData, setFormData] = useState({ name: '', email: '', bio: '', avatar: AVATARS[0], password: '', role: 'STAFF' as 'ADMIN' | 'STAFF' });
 
     useEffect(() => {
         fetchStaff();
@@ -52,7 +55,7 @@ const StaffPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
 
     const handleOpenCreate = () => {
         setEditingStaff(null);
-        setFormData({ name: '', email: '', bio: '', avatar: AVATARS[0], password: '' });
+        setFormData({ name: '', email: '', bio: '', avatar: AVATARS[0], password: '', role: 'STAFF' });
         setShowModal(true);
     };
 
@@ -63,7 +66,8 @@ const StaffPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
             email: staff.email,
             bio: staff.staffProfile?.bio || '',
             avatar: staff.avatar || AVATARS[0],
-            password: ''
+            password: '',
+            role: staff.role,
         });
         setShowModal(true);
     };
@@ -71,7 +75,15 @@ const StaffPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const payload: any = { name: formData.name, email: formData.email, bio: formData.bio, avatar: formData.avatar };
+            const payload: {
+                name: string;
+                email: string;
+                bio: string;
+                avatar: string;
+                role?: 'ADMIN' | 'STAFF';
+                password?: string;
+            } = { name: formData.name, email: formData.email, bio: formData.bio, avatar: formData.avatar };
+            if (editingStaff) payload.role = formData.role;
             if (formData.password) {
                 payload.password = formData.password;
             }
@@ -161,8 +173,8 @@ const StaffPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
                                         {staff.staffProfile?.bio || t('no_bio')}
                                     </p>
                                     <div className="pt-3 border-top d-flex justify-content-between align-items-center">
-                                        <Badge bg="success-subtle" text="success" className="px-2 py-1 rounded-pill fw-normal border border-success-subtle">
-                                            {t('active')}
+                                        <Badge bg={staff.role === 'ADMIN' ? 'primary-subtle' : 'success-subtle'} text={staff.role === 'ADMIN' ? 'primary' : 'success'} className={`px-2 py-1 rounded-pill fw-normal border ${staff.role === 'ADMIN' ? 'border-primary-subtle' : 'border-success-subtle'}`}>
+                                            {staff.role === 'ADMIN' ? 'Admin' : 'Staff'}
                                         </Badge>
                                         <Button variant="link" className="text-primary text-decoration-none p-0 small fw-bold" onClick={() => handleOpenEdit(staff)}>
                                             {t('edit')}
@@ -237,6 +249,23 @@ const StaffPage: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
                                         className="py-2 rounded-3"
                                     />
                                 </Form.Group>
+                                {editingStaff && (
+                                    <Form.Group className="mb-3">
+                                        <Form.Label className="small fw-bold text-secondary">Role</Form.Label>
+                                        <Form.Select
+                                            value={formData.role}
+                                            onChange={(event) => setFormData({ ...formData, role: event.target.value === 'ADMIN' ? 'ADMIN' : 'STAFF' })}
+                                            disabled={editingStaff.id === user?.id}
+                                            className="py-2 rounded-3"
+                                        >
+                                            <option value="STAFF">Staff</option>
+                                            <option value="ADMIN">Admin</option>
+                                        </Form.Select>
+                                        <Form.Text className="text-muted">
+                                            Admins can manage the team and business settings.
+                                        </Form.Text>
+                                    </Form.Group>
+                                )}
                                 <Form.Group className="mb-3">
                                     <Form.Label className="small fw-bold text-secondary">{t('password')}</Form.Label>
                                     <Form.Control

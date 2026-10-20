@@ -30,8 +30,8 @@ export class StaffController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStaffDto: UpdateStaffDto) {
-    return this.staffService.update(id, updateStaffDto);
+  update(@Param('id') id: string, @Body() updateStaffDto: UpdateStaffDto, @Request() req: any) {
+    return this.staffService.update(id, updateStaffDto, req.user.id);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

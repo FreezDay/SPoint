@@ -1,4 +1,5 @@
 import { Injectable, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
@@ -50,28 +51,49 @@ export class StaffService {
     return safe;
   }
 
-  async update(id: string, updateStaffDto: UpdateStaffDto) {
-    console.log('UPDATING STAFF:', id, updateStaffDto);
-    const { bio, name, avatar, password } = updateStaffDto as any;
-    const data: any = {
-      name: name,
-      avatar: avatar,
+  async update(id: string, updateStaffDto: UpdateStaffDto, currentUserId: string) {
+    const { bio, name, avatar, password, role } = updateStaffDto;
+    if (role !== undefined && role !== 'ADMIN' && role !== 'STAFF') {
+      throw new BadRequestException('Staff role must be ADMIN or STAFF');
+    }
+    const data: Prisma.UserUpdateInput = {
+      name,
+      avatar,
+      ...(role ? { role } : {}),
       staffProfile: {
         upsert: {
-          create: { bio: bio },
-          update: { bio: bio },
+          create: { bio },
+          update: { bio },
         },
       },
     };
-    if (password) {
-      data.password = await bcrypt.hash(password, 10);
-    }
+    if (password) data.password = await bcrypt.hash(password, 10);
 
-    return this.prisma.user.update({
-      where: { id },
-      data,
-      include: { staffProfile: true },
-    });
+    return this.prisma.$transaction(async (tx) => {
+      const currentStaff = await tx.user.findUniqueOrThrow({
+        where: { id },
+        select: { role: true },
+      });
+
+      if (role && role !== currentStaff.role) {
+        if (id === currentUserId) {
+          throw new ForbiddenException('You cannot change your own role');
+        }
+        if (currentStaff.role === 'ADMIN' && role === 'STAFF') {
+          const adminCount = await tx.user.count({ where: { role: 'ADMIN' } });
+          if (adminCount <= 1) {
+            throw new ForbiddenException('You cannot demote the last admin');
+          }
+        }
+      }
+
+      const { password: _password, ...updatedStaff } = await tx.user.update({
+        where: { id },
+        data,
+        include: { staffProfile: true },
+      });
+      return updatedStaff;
+    }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
   }
 
   async remove(id: string, currentUserId?: string) {
