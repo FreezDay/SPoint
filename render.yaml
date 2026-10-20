@@ -9,6 +9,8 @@ services:
     envVars:
       # DATABASE_URL must be set to the managed Postgres connection string
       # (with ?sslmode=require) in the Render dashboard service settings.
+      # For the first deployment to an empty database, also set
+      # INITIAL_ADMIN_EMAIL and INITIAL_ADMIN_PASSWORD in the dashboard.
       - key: NODE_VERSION
         value: 20
       - key: JWT_SECRET

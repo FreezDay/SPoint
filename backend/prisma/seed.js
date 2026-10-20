@@ -11,12 +11,16 @@ async function main() {
             return;
         }
 
-        const email = 'admin@example.com';
-        const password = 'password123';
+        const email = process.env.INITIAL_ADMIN_EMAIL;
+        const password = process.env.INITIAL_ADMIN_PASSWORD;
+        if (!email || !password) {
+            console.log('Initial admin credentials are not configured — seed skipped.');
+            return;
+        }
         const hashedPassword = await bcrypt.hash(password, 10);
 
         console.log(`Seeding user: ${email}...`);
-        const user = await prisma.user.upsert({
+        await prisma.user.upsert({
             where: { email },
             update: {},
             create: {
@@ -26,7 +30,7 @@ async function main() {
                 role: 'ADMIN',
             },
         });
-        console.log('User created:', user);
+        console.log('Initial admin account created.');
     } catch (e) {
         console.error('Error seeding user:', e);
     } finally {
