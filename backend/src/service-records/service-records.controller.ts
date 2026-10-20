@@ -8,21 +8,24 @@ import { ServiceRecordsService } from './service-records.service';
 
 @Controller('service-records')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles('ADMIN')
+@Roles('ADMIN', 'STAFF')
 export class ServiceRecordsController {
   constructor(private readonly serviceRecordsService: ServiceRecordsService) {}
 
   @Post()
+  @Roles('ADMIN', 'STAFF')
   create(@Body() dto: CreateServiceRecordDto, @Request() req: any) {
     return this.serviceRecordsService.create(dto, req.user);
   }
 
   @Get()
+  @Roles('ADMIN', 'STAFF')
   findAll(@Request() req: any) {
     return this.serviceRecordsService.findAll(req.user);
   }
 
   @Get('earnings')
+  @Roles('ADMIN', 'STAFF')
   getEarnings(@Request() req: any) {
     return this.serviceRecordsService.getEarnings(req.user);
   }

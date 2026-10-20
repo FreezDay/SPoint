@@ -15,7 +15,9 @@ export class ServiceRecordsService {
       orderBy: { createdAt: 'asc' },
       select: { id: true },
     });
-    const staffId = dto.staffId || admin?.id || currentUser.id;
+    const staffId = currentUser.role === 'STAFF'
+      ? currentUser.id
+      : dto.staffId || admin?.id || currentUser.id;
     const staff = await this.prisma.user.findUnique({ where: { id: staffId } });
     if (!staff) throw new ForbiddenException('A valid staff member is required');
 
