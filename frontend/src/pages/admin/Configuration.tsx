@@ -4,6 +4,7 @@ import { Percent, Settings, Users } from 'lucide-react';
 import api from '../../lib/api';
 import { useAuthStore } from '../../store/useAuthStore';
 import StaffPage from '../Staff';
+import Profile from '../Profile';
 
 type StaffMember = { id: string; name: string };
 
@@ -50,8 +51,12 @@ const Configuration: React.FC = () => {
 
     if (!isAdmin) {
         return <Container className="py-4">
-            <div className="mb-4"><div className="text-uppercase small fw-bold text-primary mb-2">Conta</div><h1 className="h3 fw-bold mb-1">Definições</h1><p className="text-muted mb-0">Bem-vindo, {user?.name}. As definições do espaço e da equipa são geridas pelo administrador.</p></div>
-            <Card className="border-0 shadow-sm rounded-4"><Card.Body className="p-4"><div className="d-flex gap-2 align-items-center mb-3 text-primary"><Settings size={20} /><h2 className="h5 fw-bold mb-0">Negócio</h2></div><p className="text-muted small mb-2">Nome do espaço (apenas leitura)</p><Form.Control value={businessName} readOnly /></Card.Body></Card>
+            <div className="mb-4"><div className="text-uppercase small fw-bold text-primary mb-2">Conta</div><h1 className="h3 fw-bold mb-1">Definições</h1><p className="text-muted mb-0">Atualize os dados do seu perfil. As definições do negócio são geridas pelo administrador.</p></div>
+            {message && <Alert variant={message.type} dismissible onClose={() => setMessage(null)}>{message.text}</Alert>}
+            <Row className="g-4">
+                <Col lg={8}><Profile embedded /></Col>
+                <Col lg={4}><Card className="border-0 shadow-sm rounded-4"><Card.Body className="p-4"><div className="d-flex gap-2 align-items-center mb-3 text-primary"><Settings size={20} /><h2 className="h5 fw-bold mb-0">Negócio</h2></div><Form.Label>Nome do espaço (apenas leitura)</Form.Label><Form.Control value={businessName} readOnly /></Card.Body></Card></Col>
+            </Row>
         </Container>;
     }
 

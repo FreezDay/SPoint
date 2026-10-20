@@ -13,7 +13,7 @@ const avatars = [
     'https://api.dicebear.com/7.x/bottts/svg?seed=Modern&backgroundColor=20c997',
 ];
 
-const Profile: React.FC = () => {
+const Profile: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
     const { user, login, token } = useAuthStore();
     const [name, setName] = useState(user?.name || '');
     const [avatar, setAvatar] = useState(user?.avatar || avatars[0]);
@@ -37,8 +37,8 @@ const Profile: React.FC = () => {
         }
     };
 
-    return <div className="py-4">
-        <div className="mb-4"><div className="text-uppercase small fw-bold text-primary mb-2">Conta pessoal</div><h1 className="h3 fw-bold mb-1">Perfil</h1><p className="text-muted mb-0">Atualize os dados usados na sua conta de cabeleireiro.</p></div>
+    return <div className={embedded ? '' : 'py-4'}>
+        {!embedded && <div className="mb-4"><div className="text-uppercase small fw-bold text-primary mb-2">Conta pessoal</div><h1 className="h3 fw-bold mb-1">Perfil</h1><p className="text-muted mb-0">Atualize os dados usados na sua conta de cabeleireiro.</p></div>}
         {message && <Alert variant={message.type} dismissible onClose={() => setMessage(null)}>{message.text}</Alert>}
         <Row className="g-4">
             <Col lg={7}><Card className="border-0 shadow-sm rounded-4"><Card.Body className="p-4"><div className="d-flex align-items-center gap-2 mb-4"><UserRound size={21} className="text-primary" /><h2 className="h5 fw-bold mb-0">Dados pessoais</h2></div><Form onSubmit={handleSubmit}><Form.Group className="mb-3"><Form.Label>Nome</Form.Label><Form.Control value={name} onChange={(event) => setName(event.target.value)} required /></Form.Group><Form.Group className="mb-3"><Form.Label>Email</Form.Label><Form.Control value={user?.email || ''} disabled /></Form.Group><Form.Group className="mb-4"><Form.Label>Nova password</Form.Label><Form.Control type="password" minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Deixe vazio para manter a atual" /></Form.Group><Button type="submit" disabled={saving} className="d-flex align-items-center gap-2"><Save size={17} />{saving ? 'A guardar...' : 'Guardar alterações'}</Button></Form></Card.Body></Card></Col>
