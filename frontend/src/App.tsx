@@ -6,6 +6,7 @@ import ServiceRegister from './pages/ServiceRegisterNoCrm';
 import Earnings from './pages/Earnings';
 import Profile from './pages/Profile';
 import Dashboard from './pages/Dashboard';
+import Staff from './pages/Staff';
 import Layout from './components/Layout';
 import PublicLayout from './components/PublicLayout';
 import api from './lib/api';
@@ -82,11 +83,12 @@ function App() {
         }>
           {/* Admin Routes */}
           <Route path="dashboard" element={
-            <ProtectedRoute roles={['ADMIN']}><Dashboard /></ProtectedRoute>
+            <ProtectedRoute roles={['ADMIN', 'STAFF']}><Dashboard /></ProtectedRoute>
           } />
+          <Route path="staff" element={<ProtectedRoute roles={['ADMIN']}><Staff /></ProtectedRoute>} />
           <Route path="register-service" element={<ProtectedRoute roles={['ADMIN', 'STAFF']}><ServiceRegister /></ProtectedRoute>} />
           <Route path="earnings" element={<ProtectedRoute roles={['ADMIN', 'STAFF']}><Earnings /></ProtectedRoute>} />
-          <Route path="profile" element={<ProtectedRoute roles={['ADMIN']}><Profile /></ProtectedRoute>} />
+          <Route path="profile" element={<ProtectedRoute roles={['ADMIN', 'STAFF']}><Profile /></ProtectedRoute>} />
           <Route path="configuration" element={
             <ProtectedRoute><Configuration /></ProtectedRoute>
           } />

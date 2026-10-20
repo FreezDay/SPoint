@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { LayoutDashboard, LogOut, Globe, Settings, ClipboardPlus, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, LogOut, Globe, Settings, ClipboardPlus, TrendingUp, UserCog, UserRound } from 'lucide-react';
 import { Navbar, Nav, Container, Button, NavDropdown } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import api from '../lib/api';
@@ -37,9 +37,9 @@ const Layout: React.FC = () => {
 
     const closeMenu = () => setExpanded(false);
 
-    // Team access stays within the app; team administration lives in Settings.
     const adminItems = [
         { path: '/dashboard', icon: <LayoutDashboard size={20} />, label: t('dashboard') },
+        { path: '/staff', icon: <UserCog size={20} />, label: t('staff') },
         { path: '/register-service', icon: <ClipboardPlus size={20} />, label: 'Registar serviço' },
         { path: '/earnings', icon: <TrendingUp size={20} />, label: 'Ganhos' },
         { path: '/configuration', icon: <Settings size={20} />, label: t('settings') },
@@ -47,8 +47,10 @@ const Layout: React.FC = () => {
     const navItems = user?.role === 'ADMIN'
         ? adminItems
         : [
+            { path: '/dashboard', icon: <LayoutDashboard size={20} />, label: t('dashboard') },
             { path: '/register-service', icon: <ClipboardPlus size={20} />, label: 'Registar serviço' },
             { path: '/earnings', icon: <TrendingUp size={20} />, label: 'Ganhos' },
+            { path: '/profile', icon: <UserRound size={20} />, label: 'Perfil' },
             { path: '/configuration', icon: <Settings size={20} />, label: t('settings') },
         ];
 
